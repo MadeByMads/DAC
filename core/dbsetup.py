@@ -18,7 +18,7 @@ Column, Integer, String, BOOLEAN, ForeignKey, Datetime, Date,Text = (
 )
 
 
-class SurrogatePK(object):
+class SurrogatePK():
     """A mixin that adds a surrogate UUID 'primary key' column named ``id`` to
     any declarative-mapped class."""
 
