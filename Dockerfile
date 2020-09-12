@@ -1,14 +1,13 @@
 FROM  tiangolo/uvicorn-gunicorn-fastapi:python3.7
 
 COPY . /app
+COPY start.sh /
 WORKDIR /app
 
 ENV settings=dev
-ENV WORKERS_PER_CORE=2
-
+ENV WEB_CONCURRENCY=1
 
 
 RUN apt-get update -y &&  pip install --upgrade pip &&  \
     pip install -r requirements.txt && \
     apt-get install -y postgresql-client
-
