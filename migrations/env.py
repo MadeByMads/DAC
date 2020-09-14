@@ -2,6 +2,7 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+import sys, os
 
 from alembic import context
 
@@ -17,7 +18,9 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+from app.main import db
+target_metadata = db
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

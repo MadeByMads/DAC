@@ -19,5 +19,5 @@ class DevSettings(BaseConfig):
     
     DATABASE_URL = config(
         "DATABASE_URL",
-        default="asyncpg:///fastapitest",
+        default="asyncpg:///permissions_service",
     )   

@@ -11,35 +11,15 @@ pydantic.json.ENCODERS_BY_TYPE[asyncpg.pgproto.pgproto.UUID] = str
 
 # Write your pydantic models here
 
-class TestSchema(BaseModel):
-    test: str 
-    status_code: int
-    class Config:
-        schema_extra = {
-             'example': {
-                'test': "Test",
-                "status_code": 200
-              
-            }
-        }
-
-class TestErrorSchema(BaseModel):
-    test: str 
-    status_code: int
-    class Config:
-        schema_extra = {
-             'example': {
-                'test': "Test Error",
-                "status_code": 404
-              
-            }
-        }
 
 
 class UserSchema(BaseModel):
     identity: str
     claim : Dict[Any, Any] = None
 
+class UpdateUserSchema(BaseModel):
+    identity: str = None
+    claim : Dict[Any, Any] = None
 
 class UserSchemaDB(UserSchema):
     id: UUID
@@ -65,6 +45,10 @@ class UserGroupSchema(BaseModel):
     user_id: UUID
     group_id : UUID
 
+
+class UpdateUserGroupSchema(BaseModel):
+    user_id: UUID = None
+    group_id : UUID = None
 class UserGroupSchemaDB(UserGroupSchema):
     id: UUID
     created: datetime
@@ -87,6 +71,10 @@ class ServiceSchemaDB(ServiceSchema):
 
 class EndpointSchema(BaseModel):
     service_id : UUID
+    prefix: str = None
+
+class UpdateEndpointSchema(BaseModel):
+    service_id : UUID = None
     prefix: str = None
 
 class EndpointSchemaDB(EndpointSchema):
@@ -114,6 +102,11 @@ class PermissionSchema(BaseModel):
     endtity : str
     method_id : UUID
     endpoint_id : UUID
+
+class UpdatePermissionSchema(BaseModel):
+    endtity : str = None
+    method_id : UUID = None
+    endpoint_id : UUID = None
 
 class PermissionSchemaDB(PermissionSchema):
     id: UUID

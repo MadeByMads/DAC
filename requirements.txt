@@ -8,6 +8,7 @@ bson==0.5.10
 certifi==2020.6.20
 chardet==3.0.4
 click==7.1.2
+coloredlogs==14.0
 databases==0.3.2
 distlib==0.3.1
 dnspython==2.0.0
@@ -23,6 +24,7 @@ hstspreload==2020.9.9
 httpcore==0.10.2
 httptools==0.1.1
 httpx==0.14.3
+humanfriendly==8.2
 hyperframe==6.0.0
 idna==2.10
 isort==5.5.2
@@ -35,6 +37,7 @@ pipenv==2020.8.13
 prometheus-client==0.8.0
 psycopg2-binary==2.8.6
 pydantic==1.6.1
+PyJWT==1.7.1
 pylint==2.6.0
 python-dateutil==2.8.1
 python-editor==1.0.4

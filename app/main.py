@@ -6,6 +6,7 @@ from sentry_sdk import init as initialize_sentry
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from core.factories import settings
 from core.extensions import db
+from app.data.models import *
 from starlette.requests import Request
 
 app = FastAPI()
