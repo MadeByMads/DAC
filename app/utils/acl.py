@@ -438,7 +438,7 @@ async def get_all_method():
 
 
 
-async def get_all_permission():
+async def get_all_permissions():
     try:
         async with db.transaction() as ctx:
             permissions = await Permission.query.gino.all()

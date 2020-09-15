@@ -1,6 +1,12 @@
 from fastapi import FastAPI
 from starlette_prometheus import metrics, PrometheusMiddleware
-from app.controllers.controller.controller import router
+from app.controllers.controller.token_controller import router
+from app.controllers.controller.acl_cont import acl_router
+from app.controllers.controller.service_cont import service_router
+from app.controllers.controller.groups_cont import group_router
+from app.controllers.controller.user_group_cont import us_gr_router
+from app.controllers.controller.methods_cont import method_router
+from app.controllers.controller.permission_cont import permission_router
 from starlette.middleware.cors import CORSMiddleware
 from sentry_sdk import init as initialize_sentry
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
@@ -36,7 +42,12 @@ app.add_middleware(
 
 
 app.add_middleware(PrometheusMiddleware)
-app.add_route("/metrics/",metrics)
-app.include_router(router)
-
+app.add_route("/metrics/", metrics)
+app.include_router(router,prefix="/token")
+app.include_router(acl_router)
+app.include_router(service_router)
+app.include_router(group_router)
+app.include_router(us_gr_router)
+app.include_router(method_router)
+app.include_router(permission_router)
 

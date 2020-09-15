@@ -1,15 +1,38 @@
 # write your schemas in this files. Use pydantic
 
-from pydantic import BaseModel,constr,validator,ValidationError,EmailStr
+from pydantic import BaseModel, constr, validator, ValidationError, EmailStr
 from uuid import UUID
-from typing import Optional,List,Union,Dict,Any
+from typing import Optional, List, Union, Mapping, Any, Dict
 import pydantic.json
-from datetime import datetime
 import asyncpg.pgproto.pgproto
+from datetime import datetime
+
 pydantic.json.ENCODERS_BY_TYPE[asyncpg.pgproto.pgproto.UUID] = str
 
 
-# Write your pydantic models here
+class TokenSchema(BaseModel):
+
+    identity: str
+    token: str
+    type:str
+    expire_time: datetime
+
+
+class TokenSchemaInDb(TokenSchema):
+    id: UUID
+
+    class Config:
+        orm_mode = True
+
+
+class TokenResponseSchema(BaseModel):
+    content: Mapping[str, Any]
+    status_code: int
+
+
+class TokenEmail(BaseModel):
+    identity: EmailStr
+
 
 
 

@@ -9,14 +9,16 @@ class DevSettings(BaseConfig):
 
     config = Config()
 
-    DB_USER = config("DB_USER", cast=str, default="postgres")
-    DB_PASSWORD = config("DB_PASSWORD", cast=Secret, default="postgres")
-    DB_HOST = config("DB_HOST", cast=str, default="db")
-    DB_PORT = config("DB_PORT", cast=str, default="5432")
-    DB_NAME = config("DB_NAME", cast=str, default="postgres")
-    
     DEBUG = config("DEBUG", cast=bool, default=True)
-    
+
+    JWT_ALGORITHM = "RS256" 
+
+    ACCESS_TIMEDELTA = config("DEFAULT_TIMEDELTA",cast=int,default=400)
+    REFRESH_TIMEDELTA = config("DEFAULT_TIMEDELTA",cast=int,default=720)
+
+    JWT_PUBLIC_KEY = open("/Users/tural/.cert/rsagent256.public","rb").read()
+    JWT_PRIVATE_KEY = open("/Users/tural/.cert/rsagent256.private","rb").read()
+
     DATABASE_URL = config(
         "DATABASE_URL",
         default="asyncpg:///permissions_service",

@@ -16,6 +16,21 @@ from sqlalchemy.dialects.postgresql import JSON
 
 #write your db models here
 
+class TokenSessions(Model):
+    __tablename__ = "token_session"
+
+    token = Column(String(), unique=True, nullable=False)
+    expire_time = Column(Datetime(timezone=True), nullable=False)
+    identity = Column(String(), nullable=False, index=True)
+    type = Column(String(),nullable=True)
+    status = Column(BOOLEAN(), nullable=False, default=True)
+
+
+class BlackList(Model):
+    __tablename__ = "black_list"
+
+    token = Column(String(), nullable=False)
+    identity = Column(String(), nullable=True)
 
 class Users(Model):
     __tablename__ = "users"
