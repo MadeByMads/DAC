@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from starlette_prometheus import metrics, PrometheusMiddleware
-from app.controllers.controller.token_controller import router
 from app.controllers.controller.acl_cont import acl_router
 from app.controllers.controller.service_cont import service_router
 from app.controllers.controller.groups_cont import group_router
@@ -43,7 +42,6 @@ app.add_middleware(
 
 app.add_middleware(PrometheusMiddleware)
 app.add_route("/metrics/", metrics)
-app.include_router(router,prefix="/token")
 app.include_router(acl_router)
 app.include_router(service_router)
 app.include_router(group_router)
