@@ -42,18 +42,24 @@ from starlette.responses import JSONResponse
 from http import HTTPStatus
 from typing import List
 import jwt, json,hashlib
-
+from app.controllers.schemas.response_schema import UserCreation, ResponseSchema
+from typing import Optional, List, Union, Mapping, Any, Dict
 
 # --------------- CREATE -----------------------
 
 def clean_dict(data : dict) -> dict:
     return {key: val for (key, val) in data.items() if val is not None}
 
-async def create_user(data: UserSchema):
+
+
+
+async def create_user(data: UserSchema) -> Union[UserCreation, JSONResponse]:
     try:
-        async with db.transaction() as ctx:
-            await Users.create(**data.dict())
-            return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
+        async with db.transaction() as ctx:    
+            user = await Users.create(**data.dict())
+
+            return UserCreation.from_orm(user)
+
     except Exception as err:
         log.error(f"Error on create_user function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
@@ -130,7 +136,7 @@ async def update_user(data: UpdateUserSchema,id: UUID):
             if user:
                 data =  clean_dict(data.dict())
                 await user.update(**data).apply()
-                return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
+                return UpdateUserSchema.from_orm(user)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
 
     except Exception as err:
@@ -239,7 +245,8 @@ async def delete_user(id: UUID):
             user = await Users.query.where(Users.id == id).gino.first()
             if user:
                 await user.delete()
-                return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
+                
+                return ResponseSchema(result=True).dict()
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
         log.error(f"Error on delete_user function ->  {err}")
@@ -438,6 +445,7 @@ async def get_all_user():
             users = await Users.query.gino.all()
             if users:
                 return parse_obj_as(List[UserSchemaDB],users)
+
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
         log.error(f"Error on get_all_user function ->  {err}")

@@ -14,7 +14,7 @@ class TokenSchema(BaseModel):
 
     identity: str
     token: str
-    type:str
+    type: str
     expire_time: datetime
 
 
@@ -43,6 +43,9 @@ class UserSchema(BaseModel):
 class UpdateUserSchema(BaseModel):
     identity: str = None
     claim : Dict[Any, Any] = None
+
+    class Config:
+        orm_mode =True
 
 class UserSchemaDB(UserSchema):
     id: UUID
