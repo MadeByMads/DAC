@@ -9,12 +9,19 @@ from core.dbsetup import (
     BOOLEAN,
     Datetime,
     Date,
-    Text,
+    Text
 )
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.dialects.postgresql import JSON, ENUM
 
+from enum import Enum as PyEnum
 #write your db models here
+
+class EntityEnum(PyEnum):
+    user = 1
+    group = 2
+    service = 3
+
 
 class TokenSessions(Model):
     __tablename__ = "token_session"
@@ -39,8 +46,6 @@ class Users(Model):
     claim = Column(JSON(),nullable=True)
     created = Column(Datetime(timezone=True), default=func.now())
     updated = Column(Datetime(timezone=True), onupdate=func.now(), nullable=True)
-
-
 
 
 class Groups(Model):
@@ -88,6 +93,8 @@ class Permission(Model):
     __tablename__ = "permission"
     
     entity = Column(String())
+    entity_type = Column(ENUM(EntityEnum), use_alter=True)
+
     method_id = Column(UUIDType(),ForeignKey("method.id",use_alter=True, ondelete="SET NULL"),nullable=False)
     endpoint_id = Column(UUIDType(),ForeignKey("endpoint.id",use_alter=True, ondelete="SET NULL"),nullable=False)
     created = Column(Datetime(timezone=True), default=func.now())

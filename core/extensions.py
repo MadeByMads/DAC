@@ -4,6 +4,7 @@ from core.factories import settings
 from ssl import create_default_context
 import coloredlogs,logging
 
+from gino.dialects.asyncpg import ENUM
 
 if not settings.DEBUG:
     ssl_object =create_default_context(cafile=settings.SSL_CERT_FILE)

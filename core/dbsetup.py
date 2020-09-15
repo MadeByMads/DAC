@@ -5,6 +5,7 @@ from sqlalchemy_utils import UUIDType, Timestamp
 # from sqlalchemy import  Column, ForeignKey, Integer, String,BOOLEAN
 from core.extensions import db
 
+
 relationship = relationship
 Column, Integer, String, BOOLEAN, ForeignKey, Datetime, Date,Text = (
     db.Column,

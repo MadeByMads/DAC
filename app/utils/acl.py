@@ -90,6 +90,15 @@ async def create_service(data: ServiceSchema):
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
+async def create_endpoint(data: EndpointSchema):
+    try:
+        async with db.transaction() as ctx:
+            await Endpoint.create(**data.dict())
+            return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
+    except Exception as err:
+        log.error(f"Error on create_endpoint function ->  {err}")
+        return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
+
 
 async def create_method(data: MethodSchema):
     try:
@@ -101,15 +110,13 @@ async def create_method(data: MethodSchema):
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
-
-
 async def create_permission(data: PermissionSchema):
     try:
         async with db.transaction() as ctx:
             await Permission.create(**data.dict())
             return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
     except Exception as err:
-        log.error(f"Error on create_method function ->  {err}")
+        log.error(f"Error on create_permission function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -176,6 +183,22 @@ async def update_service(data: ServiceSchema,id: UUID):
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
+
+async def update_endpoint(data: Endpoint,id: UUID):
+    try:
+        async with db.transaction() as ctx:
+            endpoint = await Endpoint.query.where(Endpoint.id == id).gino.first()
+            if endpoint:
+                data =  clean_dict(data.dict())
+                await endpoint.update(**data).apply()
+                return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
+            return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
+
+    except Exception as err:
+        log.error(f"Error on update_endpoint function ->  {err}")
+        return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
+
+
 async def update_method(data: MethodSchema,id: UUID):
     try:
         async with db.transaction() as ctx:
@@ -187,7 +210,7 @@ async def update_method(data: MethodSchema,id: UUID):
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
 
     except Exception as err:
-        log.error(f"Error on update_us_gr function ->  {err}")
+        log.error(f"Error on update_method function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -202,7 +225,7 @@ async def update_permission(data: UpdatePermissionSchema,id: UUID):
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
 
     except Exception as err:
-        log.error(f"Error on update_us_gr function ->  {err}")
+        log.error(f"Error on update_permission function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -219,7 +242,7 @@ async def delete_user(id: UUID):
                 return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on delete_user function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -232,7 +255,7 @@ async def delete_group(id: UUID):
                 return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on delete_group function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -245,7 +268,7 @@ async def delete_us_gr(id: UUID):
                 return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on delete_us_gr function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -258,7 +281,20 @@ async def delete_service(id: UUID):
                 return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on delete_service function ->  {err}")
+        return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
+
+
+async def delete_endpoint(id: UUID):
+    try:
+        async with db.transaction() as ctx:
+            endpoint = await Endpoint.query.where(Endpoint.id == id).gino.first()
+            if endpoint:
+                await endpoint.delete()
+                return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
+            return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
+    except Exception as err:
+        log.error(f"Error on delete_endpoint function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -272,7 +308,7 @@ async def delete_method(id: UUID):
                 return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on delete_method function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -285,7 +321,7 @@ async def delete_permission(id: UUID):
                 return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on delete_permission function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -302,7 +338,7 @@ async def get_user(id: UUID):
                 return UserSchemaDB.from_orm(user)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on get_user function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -314,7 +350,7 @@ async def get_group(id: UUID):
                 return GroupSchemaDB.from_orm(group)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on get_group function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -326,7 +362,7 @@ async def get_us_gr(id: UUID):
                 return UserGroupSchemaDB.from_orm(group)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on get_us_gr function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -338,9 +374,20 @@ async def get_service(id: UUID):
                 return ServiceSchemaDB.from_orm(service)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on get_service function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
+
+async def get_endpoint(id: UUID):
+    try:
+        async with db.transaction() as ctx:
+            endpoint = await Endpoint.query.where(Endpoint.id == id).gino.first()
+            if endpoint:
+                return EndpointSchemaDB.from_orm(endpoint)
+            return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
+    except Exception as err:
+        log.error(f"Error on get_endpoint function ->  {err}")
+        return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
 async def get_method(id: UUID):
@@ -351,10 +398,8 @@ async def get_method(id: UUID):
                 return MethodSchemaDB.from_orm(method)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on get_method function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
-
-
 
 
 async def get_permission(id: UUID):
@@ -365,10 +410,22 @@ async def get_permission(id: UUID):
                return PermissionSchemaDB.from_orm(permission)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on get_permission function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
+# --------------- GET BY NAME-----------------------
+
+async def get_method_by_name(name: str):
+    try:
+        async with db.transaction() as ctx:
+            method = await Method.query.where(Method.name == name).gino.first()
+            if method:
+                return MethodSchemaDB.from_orm(method)
+            return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
+    except Exception as err:
+        log.error(f"Error on get_method_by_name function ->  {err}")
+        return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
 # --------------- GET ALL-----------------------
@@ -383,7 +440,7 @@ async def get_all_user():
                 return parse_obj_as(List[UserSchemaDB],users)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on get_all_user function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -395,7 +452,7 @@ async def get_all_group():
                 return parse_obj_as(List[GroupSchemaDB],groups)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on get_all_group function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -407,7 +464,7 @@ async def get_all_us_gr():
                 return parse_obj_as(List[UserGroupSchemaDB],groups)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on get_all_us_gr function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -419,7 +476,7 @@ async def get_all_service():
                 return parse_obj_as(List[ServiceSchemaDB],services)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on get_all_service function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -432,7 +489,7 @@ async def get_all_method():
                 return parse_obj_as(List[MethodSchemaDB],methods)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on get_all_method function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
@@ -446,7 +503,7 @@ async def get_all_permissions():
                return parse_obj_as(List[PermissionSchemaDB],permissions)
             return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
     except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
+        log.error(f"Error on get_all_permissions function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
