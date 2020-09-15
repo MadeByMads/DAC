@@ -440,6 +440,29 @@ async def get_endpoint_by_name(name: str):
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
 
+async def get_service_by_name(name: str):
+    try:
+        async with db.transaction() as ctx:
+            service = await Service.query.where(Service.name == name).gino.first()
+            if service:
+                return ServiceSchemaDB.from_orm(service)
+            return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
+    except Exception as err:
+        log.error(f"Error on get_endpoint_by_name function ->  {err}")
+        return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
+
+
+async def get_endpoint_by_svc_prefix(id: UUID, prefix: str):
+    try:
+        async with db.transaction() as ctx:
+            endpoint = await Endpoint.query.where(and_(Endpoint.service_id == id, Endpoint.prefix == prefix)).gino.first()
+            if endpoint:
+                return EndpointSchemaDB.from_orm(endpoint)
+            return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
+    except Exception as err:
+        log.error(f"Error on get_endpoint function ->  {err}")
+        return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
+
 # --------------- GET ALL-----------------------
 
 

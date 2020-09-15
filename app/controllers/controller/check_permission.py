@@ -15,7 +15,10 @@ from app.controllers.controller.schemas import (
 )
 from app.utils.acl import (
    get_method_by_name,
-   get_endpoint_by_name
+   get_endpoint,
+   get_endpoint_by_name,
+   get_service_by_name,
+   get_endpoint_by_svc_prefix
 )
 from typing import List
 from starlette.responses import JSONResponse
@@ -38,17 +41,12 @@ async def check_permission(data: PermissionCheckSchema) -> JSONResponse:
 
    print("data ---> ", data)
    print("#########################################")
+   
+   service = await get_service_by_name(data.service)
+   endpoint = await get_endpoint_by_svc_prefix(service.id, data.endpoint)
+   method = await get_endpoint_by_name(data.method)
 
-   method = data.method
-   endpoint = data.endpoint
-   entity = data.entity
-   entity_type = data.entity_type
-   service = data.service
+   
    
 
-   print("entity ---> ", entity)
-   print("entity_type ---> ", entity_type)
-   print("method ---> ", method)
-   print("service ---> ", service)
-   print("endpoint ---> ", endpoint)
    
