@@ -427,6 +427,18 @@ async def get_method_by_name(name: str):
         log.error(f"Error on get_method_by_name function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
+    
+async def get_endpoint_by_name(name: str):
+    try:
+        async with db.transaction() as ctx:
+            endpoint = await Endpoint.query.where(Endpoint.name == name).gino.first()
+            if endpoint:
+                return EndpointSchemaDB.from_orm(endpoint)
+            return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
+    except Exception as err:
+        log.error(f"Error on get_endpoint_by_name function ->  {err}")
+        return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
+
 
 # --------------- GET ALL-----------------------
 
@@ -508,9 +520,14 @@ async def get_all_permissions():
 
 
 
-
-
-
-
-
+async def get_all_endpoints():
+    try:
+        async with db.transaction() as ctx:
+            endpoints = await Endpoint.query.gino.all()
+            if endpoints:
+               return parse_obj_as(List[EndpointSchemaDB], endpoints)
+            return JSONResponse(content={"result": False},status_code=HTTPStatus.NOT_FOUND)
+    except Exception as err:
+        log.error(f"Error on get_all_permissions function ->  {err}")
+        return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 

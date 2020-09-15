@@ -16,7 +16,7 @@ class DevSettings(BaseConfig):
     DB_HOST = config("DB_HOST", cast=str, default="db")
     DB_PORT = config("DB_PORT", cast=str, default="5432")
     DB_NAME = config("DB_NAME", cast=str, default="postgres")
-    INCLUDE_SCHEMA=config("INCLUDE_SCHEMA", cast=bool, default=False)
+    INCLUDE_SCHEMA=config("INCLUDE_SCHEMA", cast=bool, default=True)
     
     
     DATABASE_URL = config(
