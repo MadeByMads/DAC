@@ -125,12 +125,13 @@ class MethodSchemaDB(MethodSchema):
 
 
 class PermissionSchema(BaseModel):
-    endtity : str
+    entity : str
+    entity_type: str
     method_id : UUID
     endpoint_id : UUID
 
 class UpdatePermissionSchema(BaseModel):
-    endtity : str = None
+    entity : str = None
     method_id : UUID = None
     endpoint_id : UUID = None
 
@@ -141,3 +142,13 @@ class PermissionSchemaDB(PermissionSchema):
 
     class Config:
         orm_mode = True 
+
+
+class PermissionCheckSchema(BaseModel):
+    entity: str = None
+    entity_type: str = None
+    service: str = None
+    endpoint: str = None
+    method: str = None
+
+

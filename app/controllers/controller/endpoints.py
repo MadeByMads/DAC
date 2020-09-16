@@ -11,16 +11,16 @@ from fastapi import (
 )
 from uuid import UUID
 from app.controllers.controller.schemas import (
-    MethodSchema,
-    MethodSchemaDB,
+    EndpointSchema,
+    EndpointSchemaDB,
 )
 from app.utils.acl import (
-   create_method,
-   update_method,
-   delete_method,
-   get_all_method,
-   get_method,
-   get_method_by_name
+   create_endpoint,
+   update_endpoint,
+   delete_endpoint,
+   get_all_endpoints,
+   get_endpoint,
+   get_endpoint_by_name,
 )
 from typing import List
 from starlette.responses import JSONResponse
@@ -29,63 +29,63 @@ from core.factories import settings
 from typing import Union
 
 
-method_router = APIRouter()
+endpoint_router = APIRouter()
 
 # --------------- User -----------------------
 
-@method_router.post(
-    "/methods",
+@endpoint_router.post(
+    "/endpoints",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
-    tags=["methods"]
+    tags=["endpoints"]
 )
-async def add_method(data: MethodSchema) -> JSONResponse:
-    result = await create_method(data)
+async def add_method(data: EndpointSchema) -> JSONResponse:
+    result = await create_endpoint(data)
     return result
 
-@method_router.get(
-    "/methods",
+@endpoint_router.get(
+    "/endpoints",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
-    tags=["methods"]
+    tags=["endpoints"]
 )
 async def request_all_methods() -> JSONResponse:
-    result = await get_all_method()
+    result = await get_all_endpoints()
     return result
 
-@method_router.get(
-    "/methods/{id}",
+@endpoint_router.get(
+    "/endpoints/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
-    tags=["methods"]
+    tags=["endpoints"]
 )
 async def request_method(id: UUID = Path(...)) ->JSONResponse:
-    result = await get_method(id)
+    result = await get_endpoint(id)
     return result
 
-@method_router.put(
-    "/methods/{id}",
+@endpoint_router.put(
+    "/endpoints/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
-    tags=["methods"]
+    tags=["endpoints"]
 )
-async def put_method(data: MethodSchema,id: UUID = Path(...)) -> JSONResponse:
-    result = await update_method(data,id)
+async def put_method(data: EndpointSchema, id: UUID = Path(...)) -> JSONResponse:
+    result = await update_endpoint(data, id)
     return result
 
-@method_router.delete(
-    "/methods/{id}",
+@endpoint_router.delete(
+    "/endpoints/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
-    tags=["methods"]
+    tags=["endpoints"]
 )
 async def del_method(id: UUID = Path(...)) -> JSONResponse:
-    result = await delete_method(id)
+    result = await delete_endpoint(id)
     return result
 
 
