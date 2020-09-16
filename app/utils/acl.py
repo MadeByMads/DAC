@@ -239,6 +239,7 @@ async def update_permission(data: UpdatePermissionSchema,id: UUID):
 # --------------- DELETE -----------------------
 
 
+
 async def delete_user(id: UUID):
     try:
         async with db.transaction() as ctx:
