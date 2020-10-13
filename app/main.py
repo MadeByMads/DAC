@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+import asyncio
 
 from starlette.requests import Request
 from starlette_prometheus import metrics, PrometheusMiddleware
@@ -27,8 +28,6 @@ app = FastAPI()
 db.init_app(app)
 
 
-
-
 @app.on_event("startup")
 async def startup():
     print("app started")
@@ -37,7 +36,6 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     print("SHUTDOWN")
-
 
 cors_origins = [i.strip() for i in settings.CORS_ORIGINS.split(",")]
 app.add_middleware(
@@ -56,9 +54,12 @@ app.include_router(service_router)
 app.include_router(group_router)
 app.include_router(us_gr_router)
 app.include_router(method_router)
+
+
 app.include_router(permission_router)
 app.include_router(check_permission_router)
 app.include_router(endpoint_router)
 
 
-autoreg(app)
+loop = asyncio.get_event_loop()
+loop.create_task(autoreg(app))

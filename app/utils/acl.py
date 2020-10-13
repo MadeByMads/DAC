@@ -52,8 +52,6 @@ def clean_dict(data : dict) -> dict:
     return {key: val for (key, val) in data.items() if val is not None}
 
 
-
-
 async def create_user(data: UserSchema) -> Union[UserCreation, JSONResponse]:
     try:
         async with db.transaction() as ctx:    
@@ -74,7 +72,6 @@ async def create_group(data: GroupSchema):
     except Exception as err:
         log.error(f"Error on create_group function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
-
 
 
 async def create_us_gr(data: UserGroupSchema):

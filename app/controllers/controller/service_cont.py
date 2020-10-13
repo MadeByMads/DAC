@@ -45,6 +45,7 @@ service_router = APIRouter()
     tags=["services"]
 )
 async def add_service(data: ServiceSchema) -> JSONResponse:
+    print("data -> ", type(data))
     result = await create_service(data)
     return result
 
