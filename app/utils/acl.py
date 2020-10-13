@@ -35,6 +35,7 @@ from app.controllers.controller.schemas import (
     UpdatePermissionSchema,
     UpdateUserGroupSchema,
     UpdateUserSchema,
+    PermissionCheckSchema
    
 )
 from core.extensions import db
@@ -563,3 +564,50 @@ async def get_all_endpoints():
         log.error(f"Error on get_all_permissions function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
 
+
+
+# --------------- Check Permissions --------------------------
+
+
+
+
+async def has_permission(data: PermissionCheckSchema) -> bool:
+    service = await get_service_by_name(data.service)
+    endpoint = await get_endpoint_by_svc_prefix(service.id, data.endpoint)
+    method = await get_method_by_name(data.method)
+    log.warning(f"service id - > {service}")
+    log.warning(f"endpoint id - > {endpoint}")
+    log.warning(f"method id - > {method}")
+
+    if isinstance(service, JSONResponse) or isinstance(endpoint,JSONResponse) or isinstance(method, JSONResponse):
+        return JSONResponse(
+                content={"result": False}, status_code=HTTPStatus.FORBIDDEN
+            )  
+
+    if data.entity_type == "USER_GROUPS":
+        entity = await User_Groups.query.where(
+            User_Groups.group_id == data.entity
+        ).gino.first()
+        
+
+    elif data.entity_type == "USERS":
+        entity = await Users.query.where(Users.identity == data.entity).gino.first()
+
+    print("ENTITIY " ,entity.id)
+    if not entity:
+        return JSONResponse(
+            content={"result": False}, status_code=HTTPStatus.FORBIDDEN
+        )
+
+    permission = await Permission.query.where(
+        and_(
+            Permission.endpoint_id == endpoint.id,
+            Permission.method_id == method.id,
+            Permission.entity == str(entity.identity),
+            Permission.entity_type == data.entity_type,
+        )
+    ).gino.first()
+
+    return JSONResponse(
+                content={"result": True if permission else False}, status_code=HTTPStatus.OK if permission else HTTPStatus.FORBIDDEN
+            ) 

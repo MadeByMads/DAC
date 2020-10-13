@@ -9,7 +9,6 @@ from fastapi import (
     Path,
     Query,
 )
-from app.controllers.controller.schemas import TokenResponseSchema,TokenEmail
 from uuid import UUID
 from app.controllers.controller.schemas import (
     GroupSchema,
@@ -26,7 +25,6 @@ from app.utils.acl import (
 from typing import List
 from starlette.responses import JSONResponse
 from app.utils.helpers import clean_dict
-from app.data.models import TokenSessions
 from starlette.requests import Request
 from core.factories import settings
 from typing import Union

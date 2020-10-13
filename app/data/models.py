@@ -12,32 +12,10 @@ from core.dbsetup import (
     Text
 )
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import JSON, ENUM
+from sqlalchemy.dialects.postgresql import JSON
 
-from enum import Enum as PyEnum
 #write your db models here
 
-class EntityEnum(PyEnum):
-    user = 1
-    group = 2
-    service = 3
-
-
-class TokenSessions(Model):
-    __tablename__ = "token_session"
-
-    token = Column(String(), unique=True, nullable=False)
-    expire_time = Column(Datetime(timezone=True), nullable=False)
-    identity = Column(String(), nullable=False, index=True)
-    type = Column(String(),nullable=True)
-    status = Column(BOOLEAN(), nullable=False, default=True)
-
-
-class BlackList(Model):
-    __tablename__ = "black_list"
-
-    token = Column(String(), nullable=False)
-    identity = Column(String(), nullable=True)
 
 class Users(Model):
     __tablename__ = "users"
@@ -93,8 +71,7 @@ class Permission(Model):
     __tablename__ = "permission"
     
     entity = Column(String())
-    entity_type = Column(ENUM(EntityEnum), use_alter=True)
-
+    entity_type = Column(String())
     method_id = Column(UUIDType(),ForeignKey("method.id",use_alter=True, ondelete="SET NULL"),nullable=False)
     endpoint_id = Column(UUIDType(),ForeignKey("endpoint.id",use_alter=True, ondelete="SET NULL"),nullable=False)
     created = Column(Datetime(timezone=True), default=func.now())

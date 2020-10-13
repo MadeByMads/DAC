@@ -10,31 +10,6 @@ from datetime import datetime
 pydantic.json.ENCODERS_BY_TYPE[asyncpg.pgproto.pgproto.UUID] = str
 
 
-class TokenSchema(BaseModel):
-
-    identity: str
-    token: str
-    type: str
-    expire_time: datetime
-
-
-class TokenSchemaInDb(TokenSchema):
-    id: UUID
-
-    class Config:
-        orm_mode = True
-
-
-class TokenResponseSchema(BaseModel):
-    content: Mapping[str, Any]
-    status_code: int
-
-
-class TokenEmail(BaseModel):
-    identity: EmailStr
-
-
-
 
 class UserSchema(BaseModel):
     identity: str
@@ -43,9 +18,6 @@ class UserSchema(BaseModel):
 class UpdateUserSchema(BaseModel):
     identity: str = None
     claim : Dict[Any, Any] = None
-
-    class Config:
-        orm_mode =True
 
 class UserSchemaDB(UserSchema):
     id: UUID
@@ -58,6 +30,9 @@ class UserSchemaDB(UserSchema):
 class GroupSchema(BaseModel):
     name: str
 
+    @validator("name")
+    def validate_name(cls,v):
+        return v.upper()
 
 class GroupSchemaDB(GroupSchema):
     id: UUID
@@ -75,6 +50,7 @@ class UserGroupSchema(BaseModel):
 class UpdateUserGroupSchema(BaseModel):
     user_id: UUID = None
     group_id : UUID = None
+
 class UserGroupSchemaDB(UserGroupSchema):
     id: UUID
     created: datetime
@@ -85,6 +61,10 @@ class UserGroupSchemaDB(UserGroupSchema):
 
 class ServiceSchema(BaseModel):
     name : str
+
+    @validator("name")
+    def validate_name(cls,v):
+        return v.upper()
 
 class ServiceSchemaDB(ServiceSchema):
     id: UUID
@@ -114,6 +94,10 @@ class EndpointSchemaDB(EndpointSchema):
 
 class MethodSchema(BaseModel):
     name: str
+
+    @validator("name")
+    def validate_name(cls,v):
+        return v.upper()
 
 class MethodSchemaDB(MethodSchema):
     id: UUID
@@ -151,4 +135,14 @@ class PermissionCheckSchema(BaseModel):
     endpoint: str = None
     method: str = None
 
+    @validator("method")
+    def validate_method(cls,v):
+        if v:
+            return v.upper()
+        return v
 
+    @validator("service")
+    def validate_service(cls,v):
+        if v:
+            return v.upper()
+        return v
