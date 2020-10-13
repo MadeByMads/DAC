@@ -10,6 +10,8 @@ from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from core.factories import settings
 from core.extensions import db
 
+from app.utils.autoreg import autoreg
+
 from app.controllers.controller.acl_cont import acl_router
 from app.controllers.controller.service_cont import service_router
 from app.controllers.controller.groups_cont import group_router
@@ -58,3 +60,5 @@ app.include_router(permission_router)
 app.include_router(check_permission_router)
 app.include_router(endpoint_router)
 
+
+autoreg(app)
