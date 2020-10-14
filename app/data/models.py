@@ -46,7 +46,7 @@ class User_Groups(Model):
 class Service(Model):
     __tablename__ = "service"
 
-    name = Column(String(),nullable=False, index=True)
+    name = Column(String(), nullable=False, index=True, unique=True)
     created = Column(Datetime(timezone=True), default=func.now())
     updated = Column(Datetime(timezone=True), onupdate=func.now(), nullable=True)
 

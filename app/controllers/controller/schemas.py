@@ -60,10 +60,10 @@ class UserGroupSchemaDB(UserGroupSchema):
         orm_mode = True
 
 class ServiceSchema(BaseModel):
-    name : str
+    name: str
 
     @validator("name")
-    def validate_name(cls,v):
+    def validate_name(cls, v):
         return v.upper()
 
 class ServiceSchemaDB(ServiceSchema):

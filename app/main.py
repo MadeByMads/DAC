@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+import asyncio
 
 from starlette.requests import Request
 from starlette_prometheus import metrics, PrometheusMiddleware
@@ -9,6 +10,8 @@ from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
 from core.factories import settings
 from core.extensions import db
+
+from app.utils.autoreg import autoreg
 
 from app.controllers.controller.acl_cont import acl_router
 from app.controllers.controller.service_cont import service_router
@@ -25,8 +28,6 @@ app = FastAPI()
 db.init_app(app)
 
 
-
-
 @app.on_event("startup")
 async def startup():
     print("app started")
@@ -35,7 +36,6 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     print("SHUTDOWN")
-
 
 cors_origins = [i.strip() for i in settings.CORS_ORIGINS.split(",")]
 app.add_middleware(
@@ -54,7 +54,12 @@ app.include_router(service_router)
 app.include_router(group_router)
 app.include_router(us_gr_router)
 app.include_router(method_router)
+
+
 app.include_router(permission_router)
 app.include_router(check_permission_router)
 app.include_router(endpoint_router)
 
+
+loop = asyncio.get_event_loop()
+loop.create_task(autoreg(app))

@@ -28,7 +28,7 @@ class SurrogatePK():
     id = Column(UUIDType(binary=False), primary_key=True)
 
 
-class Model(Timestamp, SurrogatePK,db.Model):
+class Model(Timestamp, SurrogatePK, db.Model):
     __abstract__ = True
 
     @classmethod
