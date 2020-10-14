@@ -87,8 +87,8 @@ async def create_us_gr(data: UserGroupSchema):
 async def create_service(data: ServiceSchema):
     try:
         async with db.transaction() as ctx:
-            await Service.create(**data.dict())
-            return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
+            response = await Service.create(**data.dict())
+            return ServiceSchemaDB.from_orm(response)
     except Exception as err:
         log.error(f"Error on create_service function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
