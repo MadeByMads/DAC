@@ -19,7 +19,8 @@ from app.utils.acl import (
    update_service,
    delete_service,
    get_all_service,
-   get_service
+   get_service,
+   get_service_by_name
 )
 from typing import List
 from starlette.responses import JSONResponse
@@ -68,6 +69,17 @@ async def all_services() -> JSONResponse:
 )
 async def request_service(id: UUID = Path(...)) ->JSONResponse:
     result = await get_service(id)
+    return result
+
+@service_router.get(
+    "/services/by-name/{name}",
+    response_description="",
+    description="",
+    include_in_schema=settings.INCLUDE_SCHEMA,
+    tags=["services"]
+)
+async def request_service_by_name(name: str = Path(...)) ->JSONResponse:
+    result = await get_service_by_name(name.upper())
     return result
 
 @service_router.put(

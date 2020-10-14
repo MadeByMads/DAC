@@ -17,6 +17,7 @@ class DevSettings(BaseConfig):
     DB_PORT = config("DB_PORT", cast=str, default="5432")
     DB_NAME = config("DB_NAME", cast=str, default="postgres")
     INCLUDE_SCHEMA=config("INCLUDE_SCHEMA", cast=bool, default=True)
+    PERMISSION_SERVICE = "http://127.0.0.1:8000"
     
     
     DATABASE_URL = config(
