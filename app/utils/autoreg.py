@@ -1,5 +1,5 @@
 from app.utils.acl import get_endpoint_by_name
-from app.utils.acl import create_service
+from app.utils.acl import create_service, get_service_by_name
 from app.controllers.controller.schemas import ServiceSchema
 import asyncio
 
@@ -34,7 +34,13 @@ async def autoreg(app):
                 print(err)
     # [print(i) for i in registration_list]
 
-    data = ServiceSchema(name="hasan")
-    result = await create_service(data)
+
+    data = ServiceSchema(name="")
+
+    result = await get_service_by_name("HASAN")
+    if not result.id:
+        result = await create_service(data)
+    else:
+        print("Exists")
 
 
