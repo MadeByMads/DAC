@@ -67,8 +67,8 @@ async def create_user(data: UserSchema) -> Union[UserCreation, JSONResponse]:
 async def create_group(data: GroupSchema):
     try:
         async with db.transaction() as ctx:
-            await Groups.create(**data.dict())
-            return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
+            group = await Groups.create(**data.dict())
+            return GroupSchemaDB.from_orm(group)
     except Exception as err:
         log.error(f"Error on create_group function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
@@ -77,8 +77,8 @@ async def create_group(data: GroupSchema):
 async def create_us_gr(data: UserGroupSchema):
     try:
         async with db.transaction() as ctx:
-            await User_Groups.create(**data.dict())
-            return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
+            user_gr = await User_Groups.create(**data.dict())
+            return UserGroupSchemaDB.from_orm(user_gr)
     except Exception as err:
         log.error(f"Error on create_us_gr function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
@@ -97,8 +97,8 @@ async def create_service(data: ServiceSchema):
 async def create_endpoint(data: EndpointSchema):
     try:
         async with db.transaction() as ctx:
-            await Endpoint.create(**data.dict())
-            return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
+            endpoint = await Endpoint.create(**data.dict())
+            return EndpointSchemaDB.from_orm(endpoint)
     except Exception as err:
         log.error(f"Error on create_endpoint function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
@@ -107,8 +107,8 @@ async def create_endpoint(data: EndpointSchema):
 async def create_method(data: MethodSchema):
     try:
         async with db.transaction() as ctx:
-            await Method.create(**data.dict())
-            return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
+            methods = await Method.create(**data.dict())
+            return MethodSchemaDB.from_orm(methods)
     except Exception as err:
         log.error(f"Error on create_method function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
@@ -117,8 +117,8 @@ async def create_method(data: MethodSchema):
 async def create_permission(data: PermissionSchema):
     try:
         async with db.transaction() as ctx:
-            await Permission.create(**data.dict())
-            return JSONResponse(content={"result": True},status_code=HTTPStatus.OK)
+            permission = await Permission.create(**data.dict())
+            return PermissionSchemaDB.from_orm(permission)
     except Exception as err:
         log.error(f"Error on create_permission function ->  {err}")
         return JSONResponse(content={"result": False},status_code=HTTPStatus.BAD_REQUEST)
