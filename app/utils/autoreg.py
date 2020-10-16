@@ -24,7 +24,6 @@ async def autoreg(app):
     for route in app.routes:
         if route.path not in exclude_list:
             try:
-                endpoint_method = route.methods.pop()
                 path = route.path
                 prefixes.add(path)
             except Exception as err:
@@ -36,24 +35,24 @@ async def autoreg(app):
 async def create_endpoints(service_id: str, prefixes: set):
     for prefix in prefixes:
         async with httpx.AsyncClient() as client:
-            await client.post(f"{settings.PERMISSION_SERVICE}/endpoints", 
+            await client.post(f"{settings.DAC_URL}/endpoints", 
                                                 json={"service_id": service_id, "prefix": prefix}
                                                 )
 
 
 async def create_service(service_name):
-    # In one async client we can not send 2 requests. 
+    # In one async with client we can not send 2 requests. 
 
     # Get service_name from database. Return id if exists
     async with httpx.AsyncClient() as client:
-        response = await client.get(f"{settings.PERMISSION_SERVICE}/services/by-name/{service_name}")
+        response = await client.get(f"{settings.DAC_URL}/services/by-name/{service_name}")
         if response.status_code == HTTPStatus.OK:
             log.info(f"{response.json().get('name')} exists")
             return response.json().get("id")
     
     # Create service_name if not exists
     async with httpx.AsyncClient() as client:
-        response = await client.post(f"{settings.PERMISSION_SERVICE}/services", json = {"name": service_name})
+        response = await client.post(f"{settings.DAC_URL}/services", json = {"name": service_name})
         log.info(f"{response.json().get('name')} created")
         return response.json().get("id")
     
