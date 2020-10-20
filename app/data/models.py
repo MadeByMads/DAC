@@ -26,6 +26,7 @@ class Users(Model):
     created = Column(Datetime(timezone=True), default=func.now())
     updated = Column(Datetime(timezone=True), onupdate=func.now(), nullable=True)
 
+    groups = relationship("Groups", back_populates="user")
 
 class Groups(Model):
     __tablename__ = "groups"
@@ -34,6 +35,7 @@ class Groups(Model):
     created = Column(Datetime(timezone=True), default=func.now())
     updated = Column(Datetime(timezone=True), onupdate=func.now(), nullable=True)
 
+    user = relationship("Users", back_populates="groups")
 
 class User_Groups(Model):
     __tablename__ = "user_groups"

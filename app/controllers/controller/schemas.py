@@ -146,3 +146,9 @@ class PermissionCheckSchema(BaseModel):
         if v:
             return v.upper()
         return v
+
+    @validator("entity_type")
+    def validate_entity_type(cls,v):
+        if v:
+            return v.upper()
+        return v

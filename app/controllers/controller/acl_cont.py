@@ -85,7 +85,7 @@ async def request_all_users() -> JSONResponse:
     response_model=User,
     response_class=JSONResponse,
     status_code=HTTPStatus.OK
-)
+) 
 async def request_users(id: UUID = Path(UUID,title="User ID", description="Given user ID")) -> Union[JSONResponse,UserSchemaDB]:
     result = await get_user(id)
     return result

@@ -61,5 +61,5 @@ app.include_router(check_permission_router)
 app.include_router(endpoint_router)
 
 
-loop = asyncio.get_event_loop()
-loop.create_task(autoreg(app))
+# loop = asyncio.get_event_loop()
+# loop.create_task(autoreg(app))

@@ -579,16 +579,22 @@ async def has_permission(data: PermissionCheckSchema) -> bool:
     if isinstance(service, JSONResponse) or isinstance(endpoint,JSONResponse) or isinstance(method, JSONResponse):
         return JSONResponse(
                 content={"result": False}, status_code=HTTPStatus.FORBIDDEN
-            )  
+            )
 
     if data.entity_type == "USER_GROUPS":
         entity = await User_Groups.query.where(
             User_Groups.group_id == data.entity
         ).gino.first()
         
-
     elif data.entity_type == "USERS":
         entity = await Users.query.where(Users.identity == data.entity).gino.first()
+        user_groups = await User_Groups.query.where(User_Groups.user_id == data.entity).gino.all()
+        print("user_groups -> ", user_groups)
+    
+    elif data.entity_type == "SERVICE":
+        entity = await Service.query.where(Service.id == data.entity).gino.first()
+    
+         
 
     print("ENTITIY " ,entity.id)
     if not entity:
@@ -596,15 +602,29 @@ async def has_permission(data: PermissionCheckSchema) -> bool:
             content={"result": False}, status_code=HTTPStatus.FORBIDDEN
         )
 
-    permission = await Permission.query.where(
-        and_(
-            Permission.endpoint_id == endpoint.id,
-            Permission.method_id == method.id,
-            Permission.entity == str(entity.identity),
-            Permission.entity_type == data.entity_type,
-        )
-    ).gino.first()
+    permission = await check_permission(
+        entity,
+        data.entity_type,
+        method.id,
+        endpoint.id
+    )
 
     return JSONResponse(
                 content={"result": True if permission else False}, status_code=HTTPStatus.OK if permission else HTTPStatus.FORBIDDEN
-            ) 
+            )
+
+
+async def check_permission(
+    entity: str,
+    entity_type: str,
+    method_id: UUID,
+    endpoint_id: UUID
+):
+    return await Permission.query.where(
+        and_(
+            Permission.endpoint_id == endpoint_id,
+            Permission.method_id == method_id,
+            Permission.entity == str(entity),
+            Permission.entity_type == entity_type
+        )
+    ).gino.first()
