@@ -10,7 +10,7 @@ from fastapi import (
     Query,
 )
 from uuid import UUID
-from app.controllers.controller.schemas import (
+from app.controllers.schemas.schemas import (
    PermissionCheckSchema
 )
 from app.utils.acl import (

@@ -6,7 +6,7 @@ import asyncpg.pgproto.pgproto
 from datetime import datetime
 
 
-from app.controllers.controller.schemas import (
+from app.controllers.schemas.schemas import (
     UpdateUserSchema
 
 )

@@ -16,7 +16,7 @@ from fastapi import HTTPException
 from fastapi import Header
 from core.extensions import log
 from sqlalchemy import and_
-from app.controllers.controller.schemas import (
+from app.controllers.schemas.schemas import (
     UserSchema,
     UserSchemaDB,
     UserGroupSchema,

@@ -4,13 +4,8 @@ import asyncio
 from starlette.requests import Request
 from starlette_prometheus import metrics, PrometheusMiddleware
 from starlette.middleware.cors import CORSMiddleware
-
-from sentry_sdk import init as initialize_sentry
-from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
-
 from core.factories import settings
 from core.extensions import db
-
 from app.utils.autoreg import autoreg
 
 from app.controllers.controller.acl_cont import acl_router
@@ -59,7 +54,3 @@ app.include_router(method_router)
 app.include_router(permission_router)
 app.include_router(check_permission_router)
 app.include_router(endpoint_router)
-
-
-# loop = asyncio.get_event_loop()
-# loop.create_task(autoreg(app))

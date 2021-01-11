@@ -1,5 +1,5 @@
 from app.utils.acl import get_endpoint_by_name
-from app.controllers.controller.schemas import ServiceSchema
+from app.controllers.schemas.schemas import ServiceSchema
 from core.factories import settings
 from starlette.responses import JSONResponse
 from core.extensions import log
