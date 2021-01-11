@@ -35,7 +35,7 @@ async def shutdown():
 cors_origins = [i.strip() for i in settings.CORS_ORIGINS.split(",")]
 app.add_middleware(
         CORSMiddleware,
-        allow_origins="*",
+        allow_origins=cors_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
