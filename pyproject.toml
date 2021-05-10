@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "DAC"
+version = "0.1.0"
+description = ""
+authors = ["Dynamic Access Control"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.63.0"
+gunicorn = "^20.0.4"
+alembic = "^1.5.3"
+psycopg2-binary = "^2.8.6"
+uvicorn = {extras = ["standard"], version = "^0.13.3"}
+FastAPI-SQLAlchemy = "^0.2.1"
+SQLAlchemy-Utils = "^0.36.8"
+PyJWT = "^1.7.1"
+asyncpg = "^0.21.0"
+gino = {extras = ["pg", "starlette"], version = "^1.0.1"}
+
+
+[tool.poetry.dev-dependencies]
+pytest-cov = "^2.11.1"
+pytest-mock = "^3.5.1"
+pytest = "^6.2.2"
+pylint = "^2.6.0"
+requests = "^2.25.1"
+coloredlogs = "^15.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "app/tests/unit"
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]

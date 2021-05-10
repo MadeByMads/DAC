@@ -1,12 +1,8 @@
 from fastapi import FastAPI
-import asyncio
 
-from starlette.requests import Request
-from starlette_prometheus import metrics, PrometheusMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from core.factories import settings
 from core.extensions import db
-from app.utils.autoreg import autoreg
 
 from app.controllers.controller.acl_cont import acl_router
 from app.controllers.controller.service_cont import service_router
@@ -42,14 +38,11 @@ app.add_middleware(
     )
 
 
-app.add_middleware(PrometheusMiddleware)
-app.add_route("/metrics/", metrics)
 app.include_router(acl_router)
 app.include_router(service_router)
 app.include_router(group_router)
 app.include_router(us_gr_router)
 app.include_router(method_router)
-
 
 app.include_router(permission_router)
 app.include_router(check_permission_router)
