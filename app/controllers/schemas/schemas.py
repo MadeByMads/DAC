@@ -111,6 +111,7 @@ class MethodSchemaDB(MethodSchema):
 class PermissionSchema(BaseModel):
     entity : str
     entity_type: str
+    service_id: UUID
     method_id : UUID
     endpoint_id : UUID
 

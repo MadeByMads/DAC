@@ -78,13 +78,11 @@ class Permission(Model):
     __table_args__ = (
         UniqueConstraint("entity", "entity_type", "method_id", "endpoint_id", name="uix_permission_entity_entity_type_method_id_endpoint_id"),
     )
-    
+
     entity = Column(String())
     entity_type = Column(String())
     method_id = Column(UUIDType(),ForeignKey("method.id",use_alter=True, ondelete="SET NULL"),nullable=False)
     endpoint_id = Column(UUIDType(),ForeignKey("endpoint.id",use_alter=True, ondelete="SET NULL"),nullable=False)
+    service_id = Column(UUIDType(),ForeignKey("service.id",use_alter=True, ondelete="SET NULL"),nullable=False)
     created = Column(Datetime(timezone=True), default=func.now())
     updated = Column(Datetime(timezone=True), onupdate=func.now(), nullable=True)
-
-
-

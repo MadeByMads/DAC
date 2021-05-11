@@ -1,5 +1,16 @@
-from core.factories import settings
-from datetime import datetime, timedelta
+from typing import List, Union
+from uuid import UUID
+
+from sqlalchemy import and_
+from fastapi import HTTPException
+from pydantic import parse_obj_as
+from fastapi import HTTPException
+from starlette.responses import JSONResponse
+from http import HTTPStatus
+
+from core.extensions import db
+from core.extensions import log
+from app.controllers.schemas.response_schema import UserCreation, ResponseSchema
 from app.data.models import (
     Users,
     User_Groups,
@@ -8,15 +19,7 @@ from app.data.models import (
     Endpoint,
     Method,
     Permission,
-
 )
-from fastapi import HTTPException
-from pydantic import parse_obj_as
-from uuid import UUID
-from fastapi import HTTPException
-from fastapi import Header
-from core.extensions import log
-from sqlalchemy import and_
 from app.controllers.schemas.schemas import (
     UserSchema,
     UserSchemaDB,
@@ -39,12 +42,6 @@ from app.controllers.schemas.schemas import (
     PermissionCheckSchema
 
 )
-from core.extensions import db
-from starlette.responses import JSONResponse
-from http import HTTPStatus
-from typing import List
-from app.controllers.schemas.response_schema import UserCreation, ResponseSchema
-from typing import List, Union
 
 # --------------- CREATE -----------------------
 
@@ -436,10 +433,6 @@ async def has_permission(data: PermissionCheckSchema) -> bool:
     log.warning(f"endpoint id - > {endpoint}")
     log.warning(f"method id - > {method}")
 
-    if isinstance(service, JSONResponse) or isinstance(endpoint, JSONResponse) or isinstance(method, JSONResponse):
-        return JSONResponse(
-            content={"result": False}, status_code=HTTPStatus.FORBIDDEN
-        )
 
     if data.entity_type == "USER_GROUPS":
         entity = await User_Groups.query.where(
@@ -452,17 +445,17 @@ async def has_permission(data: PermissionCheckSchema) -> bool:
         print("user_groups -> ", user_groups)
 
     elif data.entity_type == "SERVICE":
-        entity = await Service.query.where(Service.id == data.entity).gino.first()
+        entity = await Service.query.where(Service.name == data.entity).gino.first()
 
-    print("ENTITIY ", entity.id)
     if not entity:
         return JSONResponse(
             content={"result": False}, status_code=HTTPStatus.FORBIDDEN
         )
 
     permission = await check_permission(
-        entity,
+        data.entity,
         data.entity_type,
+        service.id,
         method.id,
         endpoint.id
     )
@@ -476,6 +469,7 @@ async def has_permission(data: PermissionCheckSchema) -> bool:
 async def check_permission(
     entity: str,
     entity_type: str,
+    service_id: UUID,
     method_id: UUID,
     endpoint_id: UUID
 ):
@@ -483,6 +477,7 @@ async def check_permission(
         and_(
             Permission.endpoint_id == endpoint_id,
             Permission.method_id == method_id,
+            Permission.service_id == service_id,
             Permission.entity == str(entity),
             Permission.entity_type == entity_type
         )

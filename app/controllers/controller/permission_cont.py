@@ -1,15 +1,9 @@
+from uuid import UUID
+from starlette.responses import JSONResponse
 from fastapi import (
     APIRouter,
-    HTTPException,
-    Cookie,
-    Depends,
-    Header,
-    File,
-    Body,
     Path,
-    Query,
 )
-from uuid import UUID
 from app.controllers.schemas.schemas import (
    PermissionSchema,
    PermissionSchemaDB,
@@ -22,11 +16,7 @@ from app.utils.acl import (
    get_all_permissions,
    get_permission,
 )
-from typing import List
-from starlette.responses import JSONResponse
-from starlette.requests import Request
 from core.factories import settings
-from typing import Union
 
 
 permission_router = APIRouter()

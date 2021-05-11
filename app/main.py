@@ -22,7 +22,7 @@ db.init_app(app)
 @app.on_event("startup")
 async def startup():
     from alembic.config import main
-    main(["--raiseerr", "upgrade", "head"])
+    # main(["--raiseerr", "upgrade", "head"])
     print("app started")
 
 
