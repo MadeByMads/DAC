@@ -10,6 +10,7 @@ from app.data.models import (
     Permission,
 
 )
+from fastapi import HTTPException
 from pydantic import parse_obj_as
 from uuid import UUID
 from fastapi import HTTPException
@@ -42,14 +43,12 @@ from core.extensions import db
 from starlette.responses import JSONResponse
 from http import HTTPStatus
 from typing import List
-import jwt
-import json
-import hashlib
 from app.controllers.schemas.response_schema import UserCreation, ResponseSchema
-from typing import Optional, List, Union, Mapping, Any, Dict
+from typing import List, Union
 
 # --------------- CREATE -----------------------
 
+NOT_FOUND_MSG = "Not Found"
 
 def clean_dict(data: dict) -> dict:
     return {key: val for (key, val) in data.items() if val is not None}
@@ -130,427 +129,300 @@ async def create_permission(data: PermissionSchema):
 # --------------- UPDATE -----------------------
 
 async def update_user(data: UpdateUserSchema, id: UUID):
-    try:
-        async with db.transaction():
-            user = await Users.query.where(Users.id == id).gino.first()
-            if user:
-                data = clean_dict(data.dict())
-                await user.update(**data).apply()
-                return UpdateUserSchema.from_orm(user)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
+    async with db.transaction():
+        user = await Users.query.where(Users.id == id).gino.first()
+        if user:
+            data = clean_dict(data.dict())
+            await user.update(**data).apply()
+            return UpdateUserSchema.from_orm(user)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
-    except Exception as err:
-        log.error(f"Error on update_user function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
 
 
 async def update_group(data: GroupSchema, id: UUID):
-    try:
-        async with db.transaction():
-            group = await Groups.query.where(Groups.id == id).gino.first()
-            if group:
-                data = clean_dict(data.dict())
-                await group.update(**data).apply()
-                return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
+    async with db.transaction():
+        group = await Groups.query.where(Groups.id == id).gino.first()
+        if group:
+            data = clean_dict(data.dict())
+            await group.update(**data).apply()
+            return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
-    except Exception as err:
-        log.error(f"Error on update_group function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
 
 
 async def update_us_gr(data: UpdateUserGroupSchema, id: UUID):
-    try:
-        async with db.transaction():
-            group = await User_Groups.query.where(User_Groups.id == id).gino.first()
-            if group:
-                data = clean_dict(data.dict())
-                await group.update(**data).apply()
-                return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-
-    except Exception as err:
-        log.error(f"Error on update_us_gr function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        group = await User_Groups.query.where(User_Groups.id == id).gino.first()
+        if group:
+            data = clean_dict(data.dict())
+            await group.update(**data).apply()
+            return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def update_service(data: ServiceSchema, id: UUID):
-    try:
-        async with db.transaction():
-            service = await Service.query.where(Service.id == id).gino.first()
-            if service:
-                data = clean_dict(data.dict())
-                await service.update(**data).apply()
-                return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-
-    except Exception as err:
-        log.error(f"Error on update_us_gr function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        service = await Service.query.where(Service.id == id).gino.first()
+        if service:
+            data = clean_dict(data.dict())
+            await service.update(**data).apply()
+            return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def update_endpoint(data: Endpoint, id: UUID):
-    try:
-        async with db.transaction():
-            endpoint = await Endpoint.query.where(Endpoint.id == id).gino.first()
-            if endpoint:
-                data = clean_dict(data.dict())
-                await endpoint.update(**data).apply()
-                return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
+    async with db.transaction():
+        endpoint = await Endpoint.query.where(Endpoint.id == id).gino.first()
+        if endpoint:
+            data = clean_dict(data.dict())
+            await endpoint.update(**data).apply()
+            return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
-    except Exception as err:
-        log.error(f"Error on update_endpoint function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
 
 
 async def update_method(data: MethodSchema, id: UUID):
-    try:
-        async with db.transaction():
-            method = await Method.query.where(Method.id == id).gino.first()
-            if method:
-                data = clean_dict(data.dict())
-                await method.update(**data).apply()
-                return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
+    async with db.transaction():
+        method = await Method.query.where(Method.id == id).gino.first()
+        if method:
+            data = clean_dict(data.dict())
+            await method.update(**data).apply()
+            return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
-    except Exception as err:
-        log.error(f"Error on update_method function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
 
 
 async def update_permission(data: UpdatePermissionSchema, id: UUID):
-    try:
-        async with db.transaction():
-            permission = await Permission.query.where(Permission.id == id).gino.first()
-            if permission:
-                data = clean_dict(data.dict())
-                await permission.update(**data).apply()
-                return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
+    async with db.transaction():
+        permission = await Permission.query.where(Permission.id == id).gino.first()
+        if permission:
+            data = clean_dict(data.dict())
+            await permission.update(**data).apply()
+            return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
-    except Exception as err:
-        log.error(f"Error on update_permission function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
 
 
 # --------------- DELETE -----------------------
 
 
 async def delete_user(id: UUID):
-    try:
-        async with db.transaction():
-            user = await Users.query.where(Users.id == id).gino.first()
-            if user:
-                await user.delete()
+    async with db.transaction():
+        user = await Users.query.where(Users.id == id).gino.first()
+        if user:
+            await user.delete()
 
-                return ResponseSchema(result=True).dict()
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on delete_user function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+            return ResponseSchema(result=True).dict()
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def delete_group(id: UUID):
-    try:
-        async with db.transaction():
-            group = await Groups.query.where(Groups.id == id).gino.first()
-            if group:
-                await group.delete()
-                return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on delete_group function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        group = await Groups.query.where(Groups.id == id).gino.first()
+        if group:
+            await group.delete()
+            return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+
 
 
 async def delete_us_gr(id: UUID):
-    try:
-        async with db.transaction():
-            group = await User_Groups.query.where(User_Groups.id == id).gino.first()
-            if group:
-                await group.delete()
-                return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on delete_us_gr function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        group = await User_Groups.query.where(User_Groups.id == id).gino.first()
+        if group:
+            await group.delete()
+            return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def delete_service(id: UUID):
-    try:
-        async with db.transaction():
-            service = await Service.query.where(Service.id == id).gino.first()
-            if service:
-                await service.delete()
-                return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on delete_service function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        service = await Service.query.where(Service.id == id).gino.first()
+        if service:
+            await service.delete()
+            return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def delete_endpoint(id: UUID):
-    try:
-        async with db.transaction():
-            endpoint = await Endpoint.query.where(Endpoint.id == id).gino.first()
-            if endpoint:
-                await endpoint.delete()
-                return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on delete_endpoint function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        endpoint = await Endpoint.query.where(Endpoint.id == id).gino.first()
+        if endpoint:
+            await endpoint.delete()
+            return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+
 
 
 async def delete_method(id: UUID):
-    try:
-        async with db.transaction():
-            method = await Method.query.where(Method.id == id).gino.first()
-            if method:
-                await method.delete()
-                return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on delete_method function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        method = await Method.query.where(Method.id == id).gino.first()
+        if method:
+            await method.delete()
+            return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def delete_permission(id: UUID):
-    try:
-        async with db.transaction():
-            permission = await Permission.query.where(Permission.id == id).gino.first()
-            if permission:
-                await permission.delete()
-                return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on delete_permission function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        permission = await Permission.query.where(Permission.id == id).gino.first()
+        if permission:
+            await permission.delete()
+            return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 # --------------- GET -----------------------
 
 
 async def get_user(id: UUID):
-    try:
-        async with db.transaction():
-            user = await Users.query.where(Users.id == id).gino.first()
-            if user:
-                return UserSchemaDB.from_orm(user)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_user function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        user = await Users.query.where(Users.id == id).gino.first()
+        if user:
+            return UserSchemaDB.from_orm(user)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def get_group(id: UUID):
-    try:
-        async with db.transaction():
-            group = await Groups.query.where(Groups.id == id).gino.first()
-            if group:
-                return GroupSchemaDB.from_orm(group)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_group function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        group = await Groups.query.where(Groups.id == id).gino.first()
+        if group:
+            return GroupSchemaDB.from_orm(group)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def get_us_gr(id: UUID):
-    try:
-        async with db.transaction():
-            group = await User_Groups.query.where(User_Groups.id == id).gino.first()
-            if group:
-                return UserGroupSchemaDB.from_orm(group)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_us_gr function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        group = await User_Groups.query.where(User_Groups.id == id).gino.first()
+        if group:
+            return UserGroupSchemaDB.from_orm(group)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def get_service(id: UUID):
-    try:
-        async with db.transaction():
-            service = await Service.query.where(Service.id == id).gino.first()
-            if service:
-                return ServiceSchemaDB.from_orm(service)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_service function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        service = await Service.query.where(Service.id == id).gino.first()
+        if service:
+            return ServiceSchemaDB.from_orm(service)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def get_endpoint(id: UUID):
-    try:
-        async with db.transaction():
-            endpoint = await Endpoint.query.where(Endpoint.id == id).gino.first()
-            if endpoint:
-                return EndpointSchemaDB.from_orm(endpoint)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_endpoint function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        endpoint = await Endpoint.query.where(Endpoint.id == id).gino.first()
+        if endpoint:
+            return EndpointSchemaDB.from_orm(endpoint)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def get_method(id: UUID):
-    try:
-        async with db.transaction():
-            method = await Method.query.where(Method.id == id).gino.first()
-            if method:
-                return MethodSchemaDB.from_orm(method)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_method function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        method = await Method.query.where(Method.id == id).gino.first()
+        if method:
+            return MethodSchemaDB.from_orm(method)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def get_permission(id: UUID):
-    try:
-        async with db.transaction():
-            permission = await Permission.query.where(Permission.id == id).gino.first()
-            if permission:
-                return PermissionSchemaDB.from_orm(permission)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_permission function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        permission = await Permission.query.where(Permission.id == id).gino.first()
+        if permission:
+            return PermissionSchemaDB.from_orm(permission)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 # --------------- GET BY NAME-----------------------
 
 async def get_method_by_name(name: str):
-    try:
-        async with db.transaction():
-            method = await Method.query.where(Method.name == name).gino.first()
-            if method:
-                return MethodSchemaDB.from_orm(method)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_method_by_name function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        method = await Method.query.where(Method.name == name).gino.first()
+        if method:
+            return MethodSchemaDB.from_orm(method)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+   
 
 
 async def get_endpoint_by_name(name: str):
-    try:
-        async with db.transaction():
-            endpoint = await Endpoint.query.where(Endpoint.name == name).gino.first()
-            if endpoint:
-                return EndpointSchemaDB.from_orm(endpoint)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_endpoint_by_name function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        endpoint = await Endpoint.query.where(Endpoint.name == name).gino.first()
+        if endpoint:
+            return EndpointSchemaDB.from_orm(endpoint)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def get_service_by_name(name: str):
-    try:
-        async with db.transaction():
-            service = await Service.query.where(Service.name == name).gino.first()
-            if service:
-                return ServiceSchemaDB.from_orm(service)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_endpoint_by_name function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        service = await Service.query.where(Service.name == name).gino.first()
+        if service:
+            return ServiceSchemaDB.from_orm(service)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def get_endpoint_by_svc_prefix(id: UUID, prefix: str):
-    try:
-        async with db.transaction():
-            endpoint = await Endpoint.query.where(and_(Endpoint.service_id == id, Endpoint.prefix == prefix)).gino.first()
-            if endpoint:
-                return EndpointSchemaDB.from_orm(endpoint)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_endpoint function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
-
+    async with db.transaction():
+        endpoint = await Endpoint.query.where(and_(Endpoint.service_id == id, Endpoint.prefix == prefix)).gino.first()
+        if endpoint:
+            return EndpointSchemaDB.from_orm(endpoint)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+   
 # --------------- GET ALL-----------------------
 
 
 async def get_all_user():
-    try:
-        async with db.transaction():
-            users = await Users.query.gino.all()
-            if users:
-                return parse_obj_as(List[UserSchemaDB], users)
+    async with db.transaction():
+        users = await Users.query.gino.all()
+        if users:
+            return parse_obj_as(List[UserSchemaDB], users)
 
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_all_user function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def get_all_group():
-    try:
-        async with db.transaction():
-            groups = await Groups.query.gino.all()
-            if groups:
-                return parse_obj_as(List[GroupSchemaDB], groups)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_all_group function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
-
+    async with db.transaction():
+        groups = await Groups.query.gino.all()
+        if groups:
+            return parse_obj_as(List[GroupSchemaDB], groups)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+   
 
 async def get_all_us_gr():
-    try:
-        async with db.transaction():
-            groups = await User_Groups.query.gino.all()
-            if groups:
-                return parse_obj_as(List[UserGroupSchemaDB], groups)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_all_us_gr function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
-
+    async with db.transaction():
+        groups = await User_Groups.query.gino.all()
+        if groups:
+            return parse_obj_as(List[UserGroupSchemaDB], groups)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+   
 
 async def get_all_service():
-    try:
-        async with db.transaction():
-            services = await Service.query.gino.all()
-            if services:
-                return parse_obj_as(List[ServiceSchemaDB], services)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_all_service function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        services = await Service.query.gino.all()
+        if services:
+            return parse_obj_as(List[ServiceSchemaDB], services)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def get_all_method():
-    try:
-        async with db.transaction():
-            methods = await Method.query.gino.all()
-            if methods:
-                return parse_obj_as(List[MethodSchemaDB], methods)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_all_method function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        methods = await Method.query.gino.all()
+        if methods:
+            return parse_obj_as(List[MethodSchemaDB], methods)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 async def get_all_permissions():
-    try:
-        async with db.transaction():
-            permissions = await Permission.query.gino.all()
-            if permissions:
-                return parse_obj_as(List[PermissionSchemaDB], permissions)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_all_permissions function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
-
+    async with db.transaction():
+        permissions = await Permission.query.gino.all()
+        if permissions:
+            return parse_obj_as(List[PermissionSchemaDB], permissions)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+   
 
 async def get_all_endpoints():
-    try:
-        async with db.transaction():
-            endpoints = await Endpoint.query.gino.all()
-            if endpoints:
-                return parse_obj_as(List[EndpointSchemaDB], endpoints)
-            return JSONResponse(content={"result": False}, status_code=HTTPStatus.NOT_FOUND)
-    except Exception as err:
-        log.error(f"Error on get_all_permissions function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+    async with db.transaction():
+        endpoints = await Endpoint.query.gino.all()
+        if endpoints:
+            return parse_obj_as(List[EndpointSchemaDB], endpoints)
+        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
 # --------------- Check Permissions --------------------------
