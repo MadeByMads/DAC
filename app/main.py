@@ -1,10 +1,11 @@
-from fastapi import FastAPI, HTTPException
+import logging
 
+from fastapi import FastAPI, HTTPException
 from starlette.middleware.cors import CORSMiddleware
-from core.factories import settings
-from core.extensions import db
 from starlette.responses import JSONResponse
 from starlette.requests import Request
+from core.factories import settings
+from core.extensions import db
 from app.controllers.controller.acl_cont import acl_router
 from app.controllers.controller.service_cont import service_router
 from app.controllers.controller.groups_cont import group_router
@@ -13,16 +14,18 @@ from app.controllers.controller.methods_cont import method_router
 from app.controllers.controller.permission_cont import permission_router
 from app.controllers.controller.check_permission import check_permission_router
 from app.controllers.controller.endpoints import endpoint_router
+from app.utils.migration_setup import MigrationSetup
 
+logging.config.fileConfig("logging.conf", disable_existing_loggers=False)
 
 app = FastAPI()
 db.init_app(app)
 
 
+
 @app.on_event("startup")
 async def startup():
-    from alembic.config import main
-    # main(["--raiseerr", "upgrade", "head"])
+    MigrationSetup(settings).process_migration()
     print("app started")
 
 

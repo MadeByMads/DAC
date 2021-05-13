@@ -1,7 +1,6 @@
 from fastapi import (
     APIRouter,
 )
-from uuid import UUID
 from app.controllers.schemas.schemas import (
    PermissionCheckSchema
 )
@@ -11,6 +10,7 @@ from app.utils.acl import (
 from typing import List
 from starlette.responses import JSONResponse
 from core.factories import settings
+
 
 
 check_permission_router = APIRouter()

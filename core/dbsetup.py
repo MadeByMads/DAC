@@ -1,6 +1,7 @@
 from uuid import uuid4
 from sqlalchemy.orm import relationship
-from sqlalchemy_utils import UUIDType, Timestamp
+from sqlalchemy_utils import Timestamp
+from sqlalchemy.dialects.postgresql import UUID
 
 # from sqlalchemy import  Column, ForeignKey, Integer, String,BOOLEAN
 from core.extensions import db
@@ -25,7 +26,7 @@ class SurrogatePK():
 
     __table_args__ = {"extend_existing": True}
 
-    id = Column(UUIDType(binary=False), primary_key=True)
+    id = Column(UUID(), primary_key=True)
 
 
 class Model(Timestamp, SurrogatePK, db.Model):
