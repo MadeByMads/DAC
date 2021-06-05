@@ -1,14 +1,13 @@
 from uuid import uuid4
+
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import Timestamp
-from sqlalchemy.dialects.postgresql import UUID
 
-# from sqlalchemy import  Column, ForeignKey, Integer, String,BOOLEAN
 from core.extensions import db
 
-
 relationship = relationship
-Column, Integer, String, BOOLEAN, ForeignKey, Datetime, Date,Text = (
+Column, Integer, String, BOOLEAN, ForeignKey, Datetime, Date, Text = (
     db.Column,
     db.Integer,
     db.String,
@@ -16,11 +15,11 @@ Column, Integer, String, BOOLEAN, ForeignKey, Datetime, Date,Text = (
     db.ForeignKey,
     db.DateTime,
     db.Date,
-    db.Text
+    db.Text,
 )
 
 
-class SurrogatePK():
+class SurrogatePK:
     """A mixin that adds a surrogate UUID 'primary key' column named ``id`` to
     any declarative-mapped class."""
 
@@ -43,7 +42,6 @@ class Model(Timestamp, SurrogatePK, db.Model):
             print(kwargs)
             unique_id = uuid4()
             if not kwargs.get("id"):
-                
+
                 kwargs["id"] = unique_id
         return await cls(**kwargs)._create()
-

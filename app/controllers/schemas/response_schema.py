@@ -1,42 +1,28 @@
-from pydantic import BaseModel, constr, validator, ValidationError, EmailStr
-from uuid import UUID   
-from typing import Optional, List, Union, Mapping, Any, Dict
-import pydantic.json
-import asyncpg.pgproto.pgproto
 from datetime import datetime
+from typing import Any, Dict, Optional
+from uuid import UUID
 
+from pydantic import BaseModel
 
-from app.controllers.schemas.schemas import (
-    UpdateUserSchema
-
-)
 
 class UserCreation(BaseModel):
+    id: UUID
     identity: str
-    claim: dict = None
-    created: datetime 
-    updated: datetime = None
-    id:  UUID 
-
+    claim: Optional[Dict[str, Any]]
+    created: datetime
+    updated: Optional[datetime]
 
     class Config:
         orm_mode = True
 
 
-
 class AllUsers(UserCreation):
-    ...     
-    
+    ...
+
 
 class User(UserCreation):
-    ... 
-    
+    ...
 
 
 class ResponseSchema(BaseModel):
     result: bool = True
-
-
-
-
-

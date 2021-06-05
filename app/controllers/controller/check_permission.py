@@ -1,17 +1,8 @@
-from fastapi import (
-    APIRouter,
-)
-from app.controllers.schemas.schemas import (
-   PermissionCheckSchema
-)
-from app.utils.acl import (
-   has_permission
-)
-from typing import List
-from starlette.responses import JSONResponse
+from app.controllers.schemas.schemas import PermissionCheckSchema
+from app.utils.acl import has_permission
 from core.factories import settings
-
-
+from fastapi import APIRouter
+from starlette.responses import JSONResponse
 
 check_permission_router = APIRouter()
 
@@ -21,11 +12,8 @@ check_permission_router = APIRouter()
     response_description="",
     description="Check Permission",
     include_in_schema=settings.INCLUDE_SCHEMA,
-    tags=["check permission"]
+    tags=["check permission"],
 )
 async def check_permission(data: PermissionCheckSchema) -> JSONResponse:
- 
-   return await  has_permission(data)
-   
-   
-   
+
+    return await has_permission(data)

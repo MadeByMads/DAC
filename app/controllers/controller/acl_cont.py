@@ -1,29 +1,18 @@
+from http import HTTPStatus
 from typing import List, Union
 from uuid import UUID
 
-from http import HTTPStatus
-from starlette.responses import JSONResponse
-from fastapi import (
-    APIRouter,
-    Path,
+from app.controllers.schemas.response_schema import (
+    AllUsers,
+    ResponseSchema,
+    User,
+    UserCreation,
 )
-
+from app.controllers.schemas.schemas import UpdateUserSchema, UserSchema, UserSchemaDB
+from app.utils.acl import create_user, delete_user, get_all_user, get_user, update_user
 from core.factories import settings
-from app.utils.acl import (
-    create_user,
-    update_user,
-    delete_user,
-    get_all_user,
-    get_user,
-)
-from app.controllers.schemas.schemas import (
-    UserSchema,
-    UserSchemaDB,
-    UpdateUserSchema,
-
-)
-from app.controllers.schemas.response_schema import UserCreation, AllUsers, User, ResponseSchema
-
+from fastapi import APIRouter, Path
+from starlette.responses import JSONResponse
 
 acl_router = APIRouter()
 
@@ -40,7 +29,7 @@ acl_router = APIRouter()
     name="User Creation",
     response_model=UserCreation,
     response_class=JSONResponse,
-    status_code=HTTPStatus.OK
+    status_code=HTTPStatus.OK,
 )
 async def add_user(data: UserSchema) -> Union[UserCreation, JSONResponse]:
     result = await create_user(data)
@@ -57,7 +46,7 @@ async def add_user(data: UserSchema) -> Union[UserCreation, JSONResponse]:
     name="Get All Users",
     response_model=List[AllUsers],
     response_class=JSONResponse,
-    status_code=HTTPStatus.OK
+    status_code=HTTPStatus.OK,
 )
 async def request_all_users() -> JSONResponse:
     result = await get_all_user()
@@ -74,9 +63,11 @@ async def request_all_users() -> JSONResponse:
     name="Get user by ID",
     response_model=User,
     response_class=JSONResponse,
-    status_code=HTTPStatus.OK
+    status_code=HTTPStatus.OK,
 )
-async def request_users(id: UUID = Path(UUID, title="User ID", description="Given user ID")) -> Union[JSONResponse, UserSchemaDB]:
+async def request_users(
+    id: UUID = Path(UUID, title="User ID", description="Given user ID")
+) -> Union[JSONResponse, UserSchemaDB]:
     result = await get_user(id)
     return result
 
@@ -91,9 +82,12 @@ async def request_users(id: UUID = Path(UUID, title="User ID", description="Give
     name="Update user by ID",
     response_model=UpdateUserSchema,
     response_class=JSONResponse,
-    status_code=HTTPStatus.OK
+    status_code=HTTPStatus.OK,
 )
-async def put_users(data: UpdateUserSchema, id: UUID = Path(UUID, title="User ID", description="Given user ID")) -> JSONResponse:
+async def put_users(
+    data: UpdateUserSchema,
+    id: UUID = Path(UUID, title="User ID", description="Given user ID"),
+) -> JSONResponse:
     result = await update_user(data, id)
     return result
 
@@ -108,8 +102,10 @@ async def put_users(data: UpdateUserSchema, id: UUID = Path(UUID, title="User ID
     name="Delete user by ID",
     response_model=ResponseSchema,
     response_class=JSONResponse,
-    status_code=HTTPStatus.OK
+    status_code=HTTPStatus.OK,
 )
-async def del_users(id: UUID = Path(UUID, title="User ID", description="Given user ID")) -> JSONResponse:
+async def del_users(
+    id: UUID = Path(UUID, title="User ID", description="Given user ID")
+) -> JSONResponse:
     result = await delete_user(id)
     return result

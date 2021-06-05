@@ -1,23 +1,25 @@
 # write your schemas in this files. Use pydantic
 
-from pydantic import BaseModel, constr, validator, ValidationError, EmailStr
-from uuid import UUID
-from typing import Optional, List, Union, Mapping, Any, Dict
-import pydantic.json
-import asyncpg.pgproto.pgproto
 from datetime import datetime
+from typing import Any, Dict, List, Mapping, Optional, Union
+from uuid import UUID
+
+import asyncpg.pgproto.pgproto
+import pydantic.json
+from pydantic import BaseModel, EmailStr, ValidationError, constr, validator
 
 pydantic.json.ENCODERS_BY_TYPE[asyncpg.pgproto.pgproto.UUID] = str
 
 
-
 class UserSchema(BaseModel):
     identity: str
-    claim : Dict[Any, Any] = None
+    claim: Dict[Any, Any] = None
+
 
 class UpdateUserSchema(BaseModel):
     identity: str = None
-    claim : Dict[Any, Any] = None
+    claim: Dict[Any, Any] = None
+
 
 class UserSchemaDB(UserSchema):
     id: UUID
@@ -27,12 +29,14 @@ class UserSchemaDB(UserSchema):
     class Config:
         orm_mode = True
 
+
 class GroupSchema(BaseModel):
     name: str
 
     @validator("name")
-    def validate_name(cls,v):
+    def validate_name(cls, v):
         return v.upper()
+
 
 class GroupSchemaDB(GroupSchema):
     id: UUID
@@ -42,14 +46,16 @@ class GroupSchemaDB(GroupSchema):
     class Config:
         orm_mode = True
 
+
 class UserGroupSchema(BaseModel):
     user_id: UUID
-    group_id : UUID
+    group_id: UUID
 
 
 class UpdateUserGroupSchema(BaseModel):
     user_id: UUID = None
-    group_id : UUID = None
+    group_id: UUID = None
+
 
 class UserGroupSchemaDB(UserGroupSchema):
     id: UUID
@@ -59,6 +65,7 @@ class UserGroupSchemaDB(UserGroupSchema):
     class Config:
         orm_mode = True
 
+
 class ServiceSchema(BaseModel):
     name: str
 
@@ -66,22 +73,25 @@ class ServiceSchema(BaseModel):
     def validate_name(cls, v):
         return v.upper()
 
+
 class ServiceSchemaDB(ServiceSchema):
     id: UUID
     created: datetime
     updated: Union[None, datetime] = None
 
     class Config:
-        orm_mode = True 
+        orm_mode = True
 
 
 class EndpointSchema(BaseModel):
-    service_id : UUID
+    service_id: UUID
     prefix: str = None
 
+
 class UpdateEndpointSchema(BaseModel):
-    service_id : UUID = None
+    service_id: UUID = None
     prefix: str = None
+
 
 class EndpointSchemaDB(EndpointSchema):
     id: UUID
@@ -89,15 +99,16 @@ class EndpointSchemaDB(EndpointSchema):
     updated: Union[None, datetime] = None
 
     class Config:
-        orm_mode = True 
+        orm_mode = True
 
 
 class MethodSchema(BaseModel):
     name: str
 
     @validator("name")
-    def validate_name(cls,v):
+    def validate_name(cls, v):
         return v.upper()
+
 
 class MethodSchemaDB(MethodSchema):
     id: UUID
@@ -105,20 +116,22 @@ class MethodSchemaDB(MethodSchema):
     updated: Union[None, datetime] = None
 
     class Config:
-        orm_mode = True 
+        orm_mode = True
 
 
 class PermissionSchema(BaseModel):
-    entity : str
+    entity: str
     entity_type: str
     service_id: UUID
-    method_id : UUID
-    endpoint_id : UUID
+    method_id: UUID
+    endpoint_id: UUID
+
 
 class UpdatePermissionSchema(BaseModel):
-    entity : str = None
-    method_id : UUID = None
-    endpoint_id : UUID = None
+    entity: str = None
+    method_id: UUID = None
+    endpoint_id: UUID = None
+
 
 class PermissionSchemaDB(PermissionSchema):
     id: UUID
@@ -126,7 +139,7 @@ class PermissionSchemaDB(PermissionSchema):
     updated: Union[None, datetime] = None
 
     class Config:
-        orm_mode = True 
+        orm_mode = True
 
 
 class PermissionCheckSchema(BaseModel):
@@ -137,19 +150,19 @@ class PermissionCheckSchema(BaseModel):
     method: str = None
 
     @validator("method")
-    def validate_method(cls,v):
+    def validate_method(cls, v):
         if v:
             return v.upper()
         return v
 
     @validator("service")
-    def validate_service(cls,v):
+    def validate_service(cls, v):
         if v:
             return v.upper()
         return v
 
     @validator("entity_type")
-    def validate_entity_type(cls,v):
+    def validate_entity_type(cls, v):
         if v:
             return v.upper()
         return v

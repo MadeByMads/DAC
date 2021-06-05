@@ -1,51 +1,48 @@
+from http import HTTPStatus
 from typing import List, Union
 from uuid import UUID
 
-from sqlalchemy import and_
-from fastapi import HTTPException
-from pydantic import parse_obj_as
-from fastapi import HTTPException
-from starlette.responses import JSONResponse
-from http import HTTPStatus
-
-from core.extensions import db
-from core.extensions import log
-from app.controllers.schemas.response_schema import UserCreation, ResponseSchema
-from app.data.models import (
-    Users,
-    User_Groups,
-    Groups,
-    Service,
-    Endpoint,
-    Method,
-    Permission,
-)
+from app.controllers.schemas.response_schema import ResponseSchema, UserCreation
 from app.controllers.schemas.schemas import (
-    UserSchema,
-    UserSchemaDB,
-    UserGroupSchema,
-    UserGroupSchemaDB,
-    GroupSchema,
-    GroupSchemaDB,
-    ServiceSchema,
-    ServiceSchemaDB,
     EndpointSchema,
     EndpointSchemaDB,
+    GroupSchema,
+    GroupSchemaDB,
     MethodSchema,
     MethodSchemaDB,
+    PermissionCheckSchema,
     PermissionSchema,
     PermissionSchemaDB,
+    ServiceSchema,
+    ServiceSchemaDB,
     UpdateEndpointSchema,
     UpdatePermissionSchema,
     UpdateUserGroupSchema,
     UpdateUserSchema,
-    PermissionCheckSchema
-
+    UserGroupSchema,
+    UserGroupSchemaDB,
+    UserSchema,
+    UserSchemaDB,
 )
+from app.data.models import (
+    Endpoint,
+    Groups,
+    Method,
+    Permission,
+    Service,
+    User_Groups,
+    Users,
+)
+from core.extensions import db, log
+from fastapi import HTTPException
+from pydantic import parse_obj_as
+from sqlalchemy import and_
+from starlette.responses import JSONResponse
 
 # --------------- CREATE -----------------------
 
 NOT_FOUND_MSG = "Not Found"
+
 
 def clean_dict(data: dict) -> dict:
     return {key: val for (key, val) in data.items() if val is not None}
@@ -60,7 +57,9 @@ async def create_user(data: UserSchema) -> Union[UserCreation, JSONResponse]:
 
     except Exception as err:
         log.error(f"Error on create_user function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+        return JSONResponse(
+            content={"result": False}, status_code=HTTPStatus.BAD_REQUEST
+        )
 
 
 async def create_group(data: GroupSchema):
@@ -70,7 +69,9 @@ async def create_group(data: GroupSchema):
             return GroupSchemaDB.from_orm(group)
     except Exception as err:
         log.error(f"Error on create_group function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+        return JSONResponse(
+            content={"result": False}, status_code=HTTPStatus.BAD_REQUEST
+        )
 
 
 async def create_us_gr(data: UserGroupSchema):
@@ -80,7 +81,9 @@ async def create_us_gr(data: UserGroupSchema):
             return UserGroupSchemaDB.from_orm(user_gr)
     except Exception as err:
         log.error(f"Error on create_us_gr function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+        return JSONResponse(
+            content={"result": False}, status_code=HTTPStatus.BAD_REQUEST
+        )
 
 
 async def create_service(data: ServiceSchema):
@@ -90,7 +93,9 @@ async def create_service(data: ServiceSchema):
             return ServiceSchemaDB.from_orm(response)
     except Exception as err:
         log.error(f"Error on create_service function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+        return JSONResponse(
+            content={"result": False}, status_code=HTTPStatus.BAD_REQUEST
+        )
 
 
 async def create_endpoint(data: EndpointSchema):
@@ -100,7 +105,9 @@ async def create_endpoint(data: EndpointSchema):
             return EndpointSchemaDB.from_orm(endpoint)
     except Exception as err:
         log.error(f"Error on create_endpoint function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+        return JSONResponse(
+            content={"result": False}, status_code=HTTPStatus.BAD_REQUEST
+        )
 
 
 async def create_method(data: MethodSchema):
@@ -110,7 +117,9 @@ async def create_method(data: MethodSchema):
             return MethodSchemaDB.from_orm(methods)
     except Exception as err:
         log.error(f"Error on create_method function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+        return JSONResponse(
+            content={"result": False}, status_code=HTTPStatus.BAD_REQUEST
+        )
 
 
 async def create_permission(data: PermissionSchema):
@@ -120,10 +129,13 @@ async def create_permission(data: PermissionSchema):
             return PermissionSchemaDB.from_orm(permission)
     except Exception as err:
         log.error(f"Error on create_permission function ->  {err}")
-        return JSONResponse(content={"result": False}, status_code=HTTPStatus.BAD_REQUEST)
+        return JSONResponse(
+            content={"result": False}, status_code=HTTPStatus.BAD_REQUEST
+        )
 
 
 # --------------- UPDATE -----------------------
+
 
 async def update_user(data: UpdateUserSchema, id: UUID):
     async with db.transaction():
@@ -135,7 +147,6 @@ async def update_user(data: UpdateUserSchema, id: UUID):
         raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
-
 async def update_group(data: GroupSchema, id: UUID):
     async with db.transaction():
         group = await Groups.query.where(Groups.id == id).gino.first()
@@ -144,7 +155,6 @@ async def update_group(data: GroupSchema, id: UUID):
             await group.update(**data).apply()
             return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
         raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
-
 
 
 async def update_us_gr(data: UpdateUserGroupSchema, id: UUID):
@@ -177,7 +187,6 @@ async def update_endpoint(data: Endpoint, id: UUID):
         raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
-
 async def update_method(data: MethodSchema, id: UUID):
     async with db.transaction():
         method = await Method.query.where(Method.id == id).gino.first()
@@ -188,7 +197,6 @@ async def update_method(data: MethodSchema, id: UUID):
         raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
 
 
-
 async def update_permission(data: UpdatePermissionSchema, id: UUID):
     async with db.transaction():
         permission = await Permission.query.where(Permission.id == id).gino.first()
@@ -197,7 +205,6 @@ async def update_permission(data: UpdatePermissionSchema, id: UUID):
             await permission.update(**data).apply()
             return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
         raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
-
 
 
 # --------------- DELETE -----------------------
@@ -220,7 +227,6 @@ async def delete_group(id: UUID):
             await group.delete()
             return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
         raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
-
 
 
 async def delete_us_gr(id: UUID):
@@ -248,7 +254,6 @@ async def delete_endpoint(id: UUID):
             await endpoint.delete()
             return JSONResponse(content={"result": True}, status_code=HTTPStatus.OK)
         raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
-
 
 
 async def delete_method(id: UUID):
@@ -330,13 +335,13 @@ async def get_permission(id: UUID):
 
 # --------------- GET BY NAME-----------------------
 
+
 async def get_method_by_name(name: str):
     async with db.transaction():
         method = await Method.query.where(Method.name == name).gino.first()
         if method:
             return MethodSchemaDB.from_orm(method)
         raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
-   
 
 
 async def get_endpoint_by_name(name: str):
@@ -357,11 +362,14 @@ async def get_service_by_name(name: str):
 
 async def get_endpoint_by_svc_prefix(id: UUID, prefix: str):
     async with db.transaction():
-        endpoint = await Endpoint.query.where(and_(Endpoint.service_id == id, Endpoint.prefix == prefix)).gino.first()
+        endpoint = await Endpoint.query.where(
+            and_(Endpoint.service_id == id, Endpoint.prefix == prefix)
+        ).gino.first()
         if endpoint:
             return EndpointSchemaDB.from_orm(endpoint)
         raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
-   
+
+
 # --------------- GET ALL-----------------------
 
 
@@ -380,7 +388,7 @@ async def get_all_group():
         if groups:
             return parse_obj_as(List[GroupSchemaDB], groups)
         raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
-   
+
 
 async def get_all_us_gr():
     async with db.transaction():
@@ -388,7 +396,7 @@ async def get_all_us_gr():
         if groups:
             return parse_obj_as(List[UserGroupSchemaDB], groups)
         raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
-   
+
 
 async def get_all_service():
     async with db.transaction():
@@ -412,7 +420,7 @@ async def get_all_permissions():
         if permissions:
             return parse_obj_as(List[PermissionSchemaDB], permissions)
         raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
-   
+
 
 async def get_all_endpoints():
     async with db.transaction():
@@ -433,7 +441,6 @@ async def has_permission(data: PermissionCheckSchema) -> bool:
     log.warning(f"endpoint id - > {endpoint}")
     log.warning(f"method id - > {method}")
 
-
     if data.entity_type == "USER_GROUPS":
         entity = await User_Groups.query.where(
             User_Groups.group_id == data.entity
@@ -441,23 +448,19 @@ async def has_permission(data: PermissionCheckSchema) -> bool:
 
     elif data.entity_type == "USERS":
         entity = await Users.query.where(Users.identity == data.entity).gino.first()
-        user_groups = await User_Groups.query.where(User_Groups.user_id == data.entity).gino.all()
+        user_groups = await User_Groups.query.where(
+            User_Groups.user_id == data.entity
+        ).gino.all()
         print("user_groups -> ", user_groups)
 
     elif data.entity_type == "SERVICE":
         entity = await Service.query.where(Service.name == data.entity).gino.first()
 
     if not entity:
-        return JSONResponse(
-            content={"result": False}, status_code=HTTPStatus.FORBIDDEN
-        )
+        return JSONResponse(content={"result": False}, status_code=HTTPStatus.FORBIDDEN)
 
     permission = await check_permission(
-        data.entity,
-        data.entity_type,
-        service.id,
-        method.id,
-        endpoint.id
+        data.entity, data.entity_type, service.id, method.id, endpoint.id
     )
 
     return JSONResponse(
@@ -467,11 +470,7 @@ async def has_permission(data: PermissionCheckSchema) -> bool:
 
 
 async def check_permission(
-    entity: str,
-    entity_type: str,
-    service_id: UUID,
-    method_id: UUID,
-    endpoint_id: UUID
+    entity: str, entity_type: str, service_id: UUID, method_id: UUID, endpoint_id: UUID
 ):
     return await Permission.query.where(
         and_(
@@ -479,6 +478,6 @@ async def check_permission(
             Permission.method_id == method_id,
             Permission.service_id == service_id,
             Permission.entity == str(entity),
-            Permission.entity_type == entity_type
+            Permission.entity_type == entity_type,
         )
     ).gino.first()
