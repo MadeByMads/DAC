@@ -2,7 +2,7 @@ import logging
 
 from core.extensions import db
 from core.factories import settings
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -45,10 +45,18 @@ app.add_middleware(
 
 
 @app.exception_handler(HTTPException)
-def http_handle(request: Request, ex: HTTPException):
+def http_handler(request: Request, ex: HTTPException):
     return JSONResponse(
         status_code=ex.status_code,
         content={"message": ex.detail},
+    )
+
+
+@app.exception_handler(Exception)
+def http_handle(request: Request, ex: Exception):
+    return JSONResponse(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        content={"message": "Service unavailable"},
     )
 
 

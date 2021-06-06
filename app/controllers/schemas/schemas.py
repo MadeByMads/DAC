@@ -1,30 +1,30 @@
 # write your schemas in this files. Use pydantic
 
 from datetime import datetime
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Optional, Union
 from uuid import UUID
 
 import asyncpg.pgproto.pgproto
 import pydantic.json
-from pydantic import BaseModel, EmailStr, ValidationError, constr, validator
+from pydantic import BaseModel, validator
 
 pydantic.json.ENCODERS_BY_TYPE[asyncpg.pgproto.pgproto.UUID] = str
 
 
 class UserSchema(BaseModel):
     identity: str
-    claim: Dict[Any, Any] = None
+    claim: Optional[Dict[Any, Any]]
 
 
 class UpdateUserSchema(BaseModel):
-    identity: str = None
-    claim: Dict[Any, Any] = None
+    identity: Optional[str]
+    claim: Optional[Dict[Any, Any]]
 
 
 class UserSchemaDB(UserSchema):
     id: UUID
     created: datetime
-    updated: Union[None, datetime] = None
+    updated: Optional[datetime]
 
     class Config:
         orm_mode = True
@@ -41,7 +41,7 @@ class GroupSchema(BaseModel):
 class GroupSchemaDB(GroupSchema):
     id: UUID
     created: datetime
-    updated: Union[None, datetime] = None
+    updated: Optional[datetime]
 
     class Config:
         orm_mode = True
@@ -53,14 +53,14 @@ class UserGroupSchema(BaseModel):
 
 
 class UpdateUserGroupSchema(BaseModel):
-    user_id: UUID = None
-    group_id: UUID = None
+    user_id: Optional[UUID]
+    group_id: Optional[UUID]
 
 
 class UserGroupSchemaDB(UserGroupSchema):
     id: UUID
     created: datetime
-    updated: Union[None, datetime] = None
+    updated: Optional[datetime]
 
     class Config:
         orm_mode = True
@@ -77,7 +77,7 @@ class ServiceSchema(BaseModel):
 class ServiceSchemaDB(ServiceSchema):
     id: UUID
     created: datetime
-    updated: Union[None, datetime] = None
+    updated: Optional[datetime]
 
     class Config:
         orm_mode = True
@@ -85,18 +85,18 @@ class ServiceSchemaDB(ServiceSchema):
 
 class EndpointSchema(BaseModel):
     service_id: UUID
-    prefix: str = None
+    prefix: Optional[str]
 
 
 class UpdateEndpointSchema(BaseModel):
-    service_id: UUID = None
-    prefix: str = None
+    service_id: Optional[UUID]
+    prefix: Optional[str]
 
 
 class EndpointSchemaDB(EndpointSchema):
     id: UUID
     created: datetime
-    updated: Union[None, datetime] = None
+    updated: Optional[datetime]
 
     class Config:
         orm_mode = True
@@ -113,7 +113,7 @@ class MethodSchema(BaseModel):
 class MethodSchemaDB(MethodSchema):
     id: UUID
     created: datetime
-    updated: Union[None, datetime] = None
+    updated: Optional[datetime]
 
     class Config:
         orm_mode = True
@@ -128,41 +128,29 @@ class PermissionSchema(BaseModel):
 
 
 class UpdatePermissionSchema(BaseModel):
-    entity: str = None
-    method_id: UUID = None
-    endpoint_id: UUID = None
+    entity: Optional[str]
+    method_id: Optional[UUID]
+    endpoint_id: Optional[UUID]
 
 
 class PermissionSchemaDB(PermissionSchema):
     id: UUID
     created: datetime
-    updated: Union[None, datetime] = None
+    updated: Optional[datetime]
 
     class Config:
         orm_mode = True
 
 
 class PermissionCheckSchema(BaseModel):
-    entity: str = None
-    entity_type: str = None
-    service: str = None
-    endpoint: str = None
-    method: str = None
+    entity: Optional[str]
+    entity_type: Optional[str]
+    service: Optional[str]
+    endpoint: Optional[str]
+    method: Optional[str]
 
-    @validator("method")
+    @validator("method", "entity_type", "service")
     def validate_method(cls, v):
-        if v:
-            return v.upper()
-        return v
-
-    @validator("service")
-    def validate_service(cls, v):
-        if v:
-            return v.upper()
-        return v
-
-    @validator("entity_type")
-    def validate_entity_type(cls, v):
         if v:
             return v.upper()
         return v
