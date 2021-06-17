@@ -1,28 +1,15 @@
-from core.dbsetup import (
-    BOOLEAN,
-    Column,
-    Date,
-    Datetime,
-    ForeignKey,
-    Integer,
-    Model,
-    String,
-    Text,
-    relationship,
-)
-from sqlalchemy import UniqueConstraint
-from sqlalchemy.dialects.postgresql import JSON, UUID
-from sqlalchemy.sql import func
-
-# write your db models here
+from app.controllers.schemas.schemas import USER_TYPES
+from core.dbsetup import Model, db
+from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.dialects.postgresql import ENUM, JSON, UUID
+from sqlalchemy.orm import relationship
 
 
 class Users(Model):
     __tablename__ = "users"
 
-    identity = Column(String(), nullable=False, index=True, unique=True)
-    claim = Column(JSON(), nullable=True)
-    updated = Column(Datetime(timezone=True), onupdate=func.now(), nullable=True)
+    identity = db.Column(db.String(), nullable=False, index=True, unique=True)
+    claim = db.Column(JSON(), nullable=True)
 
     groups = relationship("Groups", back_populates="user")
 
@@ -30,9 +17,7 @@ class Users(Model):
 class Groups(Model):
     __tablename__ = "groups"
 
-    name = Column(String(), nullable=False, index=True, unique=True)
-    created = Column(Datetime(timezone=True), default=func.now())
-    updated = Column(Datetime(timezone=True), onupdate=func.now(), nullable=True)
+    name = db.Column(ENUM(USER_TYPES), nullable=False, index=True, unique=True)
 
     user = relationship("Users", back_populates="groups")
 
@@ -40,27 +25,23 @@ class Groups(Model):
 class User_Groups(Model):
     __tablename__ = "user_groups"
 
-    user_id = Column(
+    user_id = db.Column(
         UUID(),
         ForeignKey("users.id", use_alter=True, ondelete="SET NULL"),
         nullable=False,
         unique=True,
     )
-    group_id = Column(
+    group_id = db.Column(
         UUID(),
         ForeignKey("groups.id", use_alter=True, ondelete="SET NULL"),
         nullable=False,
     )
-    created = Column(Datetime(timezone=True), default=func.now())
-    updated = Column(Datetime(timezone=True), onupdate=func.now(), nullable=True)
 
 
 class Service(Model):
     __tablename__ = "service"
 
-    name = Column(String(), nullable=False, index=True, unique=True)
-    created = Column(Datetime(timezone=True), default=func.now())
-    updated = Column(Datetime(timezone=True), onupdate=func.now(), nullable=True)
+    name = db.Column(db.String(), nullable=False, index=True, unique=True)
 
 
 class Endpoint(Model):
@@ -69,22 +50,18 @@ class Endpoint(Model):
         UniqueConstraint("service_id", "prefix", name="uix_endpoint_service_id_prefix"),
     )
 
-    service_id = Column(
+    service_id = db.Column(
         UUID(),
         ForeignKey("service.id", use_alter=True, ondelete="SET NULL"),
         nullable=False,
     )
-    prefix = Column(String())
-    created = Column(Datetime(timezone=True), default=func.now())
-    updated = Column(Datetime(timezone=True), onupdate=func.now(), nullable=True)
+    prefix = db.Column(db.String())
 
 
 class Method(Model):
     __tablename__ = "method"
 
-    name = Column(String(), nullable=False, index=True, unique=True)
-    created = Column(Datetime(timezone=True), default=func.now())
-    updated = Column(Datetime(timezone=True), onupdate=func.now(), nullable=True)
+    name = db.Column(db.String(), nullable=False, index=True, unique=True)
 
 
 class Permission(Model):
@@ -99,22 +76,32 @@ class Permission(Model):
         ),
     )
 
-    entity = Column(String())
-    entity_type = Column(String())
-    method_id = Column(
+    entity = db.Column(db.String())
+    entity_type = db.Column(db.String())
+    method_id = db.Column(
         UUID(),
         ForeignKey("method.id", use_alter=True, ondelete="SET NULL"),
         nullable=False,
     )
-    endpoint_id = Column(
+    endpoint_id = db.Column(
         UUID(),
         ForeignKey("endpoint.id", use_alter=True, ondelete="SET NULL"),
         nullable=False,
     )
-    service_id = Column(
+    service_id = db.Column(
         UUID(),
         ForeignKey("service.id", use_alter=True, ondelete="SET NULL"),
         nullable=False,
     )
-    created = Column(Datetime(timezone=True), default=func.now())
-    updated = Column(Datetime(timezone=True), onupdate=func.now(), nullable=True)
+
+
+class TokenSessions(Model):
+    __tablename__ = "token_session"
+
+    iss = db.Column(db.String(), unique=True, nullable=False)
+    exp = db.Column(db.DateTime(timezone=True), nullable=False)
+    identity = db.Column(db.String(), nullable=False, index=True)
+    type = db.Column(db.String(), nullable=False)
+    status = db.Column(db.Boolean(), nullable=False, default=True)
+    iat = db.Column(db.DateTime(timezone=True), nullable=False)
+    role = db.Column(db.String(), nullable=False)

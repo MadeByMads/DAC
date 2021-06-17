@@ -1,11 +1,14 @@
 # write your schemas in this files. Use pydantic
 
 from datetime import datetime
-from typing import Any, Dict, Optional, Union
+from enum import Enum
+from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 import asyncpg.pgproto.pgproto
 import pydantic.json
+from app.data.models import USER_TYPES
+from core.factories import settings
 from pydantic import BaseModel, validator
 
 pydantic.json.ENCODERS_BY_TYPE[asyncpg.pgproto.pgproto.UUID] = str
@@ -31,7 +34,10 @@ class UserSchemaDB(UserSchema):
 
 
 class GroupSchema(BaseModel):
-    name: str
+    name: USER_TYPES
+
+    class Config:
+        use_enum_values = True
 
     @validator("name")
     def validate_name(cls, v):
@@ -150,7 +156,21 @@ class PermissionCheckSchema(BaseModel):
     method: Optional[str]
 
     @validator("method", "entity_type", "service")
-    def validate_method(cls, v):
+    def _upper(cls, v):
         if v:
             return v.upper()
         return v
+
+
+class JWTPayload(BaseModel):
+    iss: str = settings.JWT_ISSUER
+    iat: datetime = datetime.now()
+    exp: datetime
+    identity: str
+    role: str
+    type: str = "ACCESS"
+
+
+class JWTHeaders(BaseModel):
+    alg: str = "RS256"
+    typ: str = "JWT"

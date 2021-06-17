@@ -16,4 +16,4 @@ check_permission_router = APIRouter()
 )
 async def check_permission(data: PermissionCheckSchema) -> JSONResponse:
 
-    return await PermissionService().check_permission(data)
+    return await PermissionService().has_permission(data)

@@ -16,13 +16,13 @@ from core.factories import settings
 from fastapi import APIRouter, Path
 from starlette.responses import JSONResponse
 
-permission_router = APIRouter()
+permission_router = APIRouter(prefix="/permissions")
 
 # --------------- User -----------------------
 
 
 @permission_router.post(
-    "/permissions",
+    "",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -34,7 +34,7 @@ async def add_permission(data: PermissionSchema) -> JSONResponse:
 
 
 @permission_router.get(
-    "/permissions",
+    "",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -46,7 +46,7 @@ async def request_all_permissions() -> JSONResponse:
 
 
 @permission_router.get(
-    "/permissions/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -58,7 +58,7 @@ async def request_permission(id: UUID = Path(...)) -> JSONResponse:
 
 
 @permission_router.put(
-    "/permissions/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -72,7 +72,7 @@ async def put_permission(
 
 
 @permission_router.delete(
-    "/permissions/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,

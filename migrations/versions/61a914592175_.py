@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: a9cd7ffa44a1
+Revision ID: 61a914592175
 Revises: 
-Create Date: 2021-06-06 14:20:48.164886
+Create Date: 2021-06-06 16:48:39.574930
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'a9cd7ffa44a1'
+revision = '61a914592175'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,7 +29,7 @@ def upgrade():
     sa.UniqueConstraint('service_id', 'prefix', name='uix_endpoint_service_id_prefix')
     )
     op.create_table('groups',
-    sa.Column('name', sa.String(), nullable=False),
+    sa.Column('name', postgresql.ENUM('ADMINS', 'USERS', 'MODERATORS', 'SUPPORTS', 'SUPERADMINS', name='user_types'), nullable=False),
     sa.Column('created', sa.DateTime(timezone=True), nullable=True),
     sa.Column('updated', sa.DateTime(timezone=True), nullable=True),
     sa.Column('id', postgresql.UUID(), nullable=False),

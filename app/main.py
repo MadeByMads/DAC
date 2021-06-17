@@ -14,6 +14,7 @@ from app.controllers.controller.groups_cont import group_router
 from app.controllers.controller.methods_cont import method_router
 from app.controllers.controller.permission_cont import permission_router
 from app.controllers.controller.service_cont import service_router
+from app.controllers.controller.token_controller import jwt_router
 from app.controllers.controller.user_group_cont import us_gr_router
 from app.utils.migration_setup import MigrationSetup
 
@@ -69,3 +70,4 @@ app.include_router(method_router)
 app.include_router(permission_router)
 app.include_router(check_permission_router)
 app.include_router(endpoint_router)
+app.include_router(jwt_router)

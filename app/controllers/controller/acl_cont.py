@@ -14,13 +14,13 @@ from core.factories import settings
 from fastapi import APIRouter, Path
 from starlette.responses import JSONResponse
 
-acl_router = APIRouter()
+acl_router = APIRouter(prefix="/users")
 
 # --------------- User -----------------------
 
 
 @acl_router.post(
-    "/users",
+    "",
     response_description="Successful Response",
     description="User Creation",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -37,7 +37,7 @@ async def add_user(data: UserSchema) -> Union[UserCreation, JSONResponse]:
 
 
 @acl_router.get(
-    "/users",
+    "",
     response_description="Get All Users",
     description="Get All Users",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -54,7 +54,7 @@ async def request_all_users() -> JSONResponse:
 
 
 @acl_router.get(
-    "/users/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -73,7 +73,7 @@ async def request_users(
 
 
 @acl_router.put(
-    "/users/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -93,7 +93,7 @@ async def put_users(
 
 
 @acl_router.delete(
-    "/users/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,

@@ -13,14 +13,14 @@ from core.factories import settings
 from fastapi import APIRouter, Path
 from starlette.responses import JSONResponse
 
-service_router = APIRouter()
+service_router = APIRouter(prefix="/services")
 
 
 # --------------- Services-----------------------
 
 
 @service_router.post(
-    "/services",
+    "",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -32,7 +32,7 @@ async def add_service(data: ServiceSchema) -> JSONResponse:
 
 
 @service_router.get(
-    "/services",
+    "",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -44,7 +44,7 @@ async def all_services() -> JSONResponse:
 
 
 @service_router.get(
-    "/services/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -56,7 +56,7 @@ async def request_service(id: UUID = Path(...)) -> JSONResponse:
 
 
 @service_router.get(
-    "/services/by-name/{name}",
+    "/by-name/{name}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -68,7 +68,7 @@ async def request_service_by_name(name: str = Path(...)) -> JSONResponse:
 
 
 @service_router.put(
-    "/services/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -80,7 +80,7 @@ async def put_service(data: ServiceSchema, id: UUID = Path(...)) -> JSONResponse
 
 
 @service_router.delete(
-    "/services/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,

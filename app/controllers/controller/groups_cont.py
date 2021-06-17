@@ -13,14 +13,14 @@ from core.factories import settings
 from fastapi import APIRouter, Path
 from starlette.responses import JSONResponse
 
-group_router = APIRouter()
+group_router = APIRouter(prefix="/groups")
 
 
 # --------------- Group -----------------------
 
 
 @group_router.post(
-    "/groups",
+    "",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -32,7 +32,7 @@ async def add_group(data: GroupSchema) -> JSONResponse:
 
 
 @group_router.get(
-    "/groups",
+    "",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -44,7 +44,7 @@ async def request_all_groups() -> JSONResponse:
 
 
 @group_router.get(
-    "/groups/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -56,7 +56,7 @@ async def request_groups(id: UUID = Path(...)) -> Union[JSONResponse]:
 
 
 @group_router.put(
-    "/groups/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -68,7 +68,7 @@ async def put_group(data: GroupSchema, id: UUID = Path(...)) -> JSONResponse:
 
 
 @group_router.delete(
-    "/groups/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,

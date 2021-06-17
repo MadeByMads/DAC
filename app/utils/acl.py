@@ -24,6 +24,7 @@ from app.controllers.schemas.schemas import (
     UserSchemaDB,
 )
 from app.data.models import (
+    USER_TYPES,
     Endpoint,
     Groups,
     Method,
@@ -67,7 +68,7 @@ async def create_group(data: GroupSchema):
         group = await Groups.query.where(Groups.name == data.name).gino.first()
         if group:
             raise HTTPException(status_code=HTTPStatus.BAD_REQUEST)
-        group = await Groups.create(**data.dict())
+        group = await Groups.create(name=USER_TYPES(data.name))
         return GroupSchemaDB.from_orm(group)
 
 
@@ -411,61 +412,47 @@ async def get_endpoint_by_svc_prefix(id: UUID, prefix: str):
 async def get_all_user():
     async with db.transaction():
         users = await Users.query.gino.all()
-        if users:
-            return parse_obj_as(List[UserSchemaDB], users)
-
-        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+        return parse_obj_as(List[UserSchemaDB], users)
 
 
 @log
 async def get_all_group():
     async with db.transaction():
         groups = await Groups.query.gino.all()
-        if groups:
-            return parse_obj_as(List[GroupSchemaDB], groups)
-        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+        return parse_obj_as(List[GroupSchemaDB], groups)
 
 
 @log
 async def get_all_us_gr():
     async with db.transaction():
         groups = await User_Groups.query.gino.all()
-        if groups:
-            return parse_obj_as(List[UserGroupSchemaDB], groups)
-        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+
+        return parse_obj_as(List[UserGroupSchemaDB], groups)
 
 
 @log
 async def get_all_service():
     async with db.transaction():
         services = await Service.query.gino.all()
-        if services:
-            return parse_obj_as(List[ServiceSchemaDB], services)
-        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+        return parse_obj_as(List[ServiceSchemaDB], services)
 
 
 @log
 async def get_all_method():
     async with db.transaction():
         methods = await Method.query.gino.all()
-        if methods:
-            return parse_obj_as(List[MethodSchemaDB], methods)
-        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+        return parse_obj_as(List[MethodSchemaDB], methods)
 
 
 @log
 async def get_all_permissions():
     async with db.transaction():
         permissions = await Permission.query.gino.all()
-        if permissions:
-            return parse_obj_as(List[PermissionSchemaDB], permissions)
-        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+        return parse_obj_as(List[PermissionSchemaDB], permissions)
 
 
 @log
 async def get_all_endpoints():
     async with db.transaction():
         endpoints = await Endpoint.query.gino.all()
-        if endpoints:
-            return parse_obj_as(List[EndpointSchemaDB], endpoints)
-        raise HTTPException(detail=NOT_FOUND_MSG, status_code=HTTPStatus.NOT_FOUND)
+        return parse_obj_as(List[EndpointSchemaDB], endpoints)

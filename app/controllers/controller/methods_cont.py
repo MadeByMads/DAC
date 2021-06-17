@@ -13,13 +13,13 @@ from core.factories import settings
 from fastapi import APIRouter, Path
 from starlette.responses import JSONResponse
 
-method_router = APIRouter()
+method_router = APIRouter(prefix="/methods")
 
-# --------------- User -----------------------
+# --------------- Methods -----------------------
 
 
 @method_router.post(
-    "/methods",
+    "",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -31,7 +31,7 @@ async def add_method(data: MethodSchema) -> JSONResponse:
 
 
 @method_router.get(
-    "/methods",
+    "",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -43,7 +43,7 @@ async def request_all_methods() -> JSONResponse:
 
 
 @method_router.get(
-    "/methods/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -55,7 +55,7 @@ async def request_method(id: UUID = Path(...)) -> JSONResponse:
 
 
 @method_router.put(
-    "/methods/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,
@@ -67,7 +67,7 @@ async def put_method(data: MethodSchema, id: UUID = Path(...)) -> JSONResponse:
 
 
 @method_router.delete(
-    "/methods/{id}",
+    "/{id}",
     response_description="",
     description="",
     include_in_schema=settings.INCLUDE_SCHEMA,

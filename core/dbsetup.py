@@ -1,22 +1,9 @@
 from uuid import uuid4
 
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
-from sqlalchemy_utils import Timestamp
+from sqlalchemy.sql import func
 
 from core.extensions import db
-
-relationship = relationship
-Column, Integer, String, BOOLEAN, ForeignKey, Datetime, Date, Text = (
-    db.Column,
-    db.Integer,
-    db.String,
-    db.BOOLEAN,
-    db.ForeignKey,
-    db.DateTime,
-    db.Date,
-    db.Text,
-)
 
 
 class SurrogatePK:
@@ -25,10 +12,12 @@ class SurrogatePK:
 
     __table_args__ = {"extend_existing": True}
 
-    id = Column(UUID(), primary_key=True)
+    id = db.Column(UUID(), primary_key=True)
+    created = db.Column(db.DateTime(timezone=True), default=func.now())
+    updated = db.Column(db.DateTime(timezone=True), onupdate=func.now(), nullable=True)
 
 
-class Model(Timestamp, SurrogatePK, db.Model):
+class Model(SurrogatePK, db.Model):
     __abstract__ = True
 
     @classmethod
